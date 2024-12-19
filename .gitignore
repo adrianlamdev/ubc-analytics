@@ -169,3 +169,25 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Node/Next.js
+node_modules/
+.next/
+out/
+build/
+.env.local
+.env*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+data/raw/
+data/processed/
