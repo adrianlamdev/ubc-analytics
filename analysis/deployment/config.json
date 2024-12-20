@@ -1,0 +1,200 @@
+{
+    "sklearn": {
+        "columns": [
+            "Campus",
+            "Subject",
+            "Course",
+            "Year",
+            "Session",
+            "SubjectCourse",
+            "CourseLevel",
+            "Years_Since_Start",
+            "Course_Avg_Roll_1y",
+            "Course_Min_Last_3y",
+            "Course_Max_Last_3y",
+            "Course_Std_Last_3y",
+            "Professor",
+            "Prof_Courses_Taught",
+            "Prev_Median",
+            "Prof_Prev_Median",
+            "Prev_Percentile (25)",
+            "Prof_Prev_Percentile (25)",
+            "Prev_Percentile (75)",
+            "Prof_Prev_Percentile (75)",
+            "Prev_High",
+            "Prof_Prev_High",
+            "Prev_Low",
+            "Prof_Prev_Low",
+            "Prev_<50",
+            "Prof_Prev_<50",
+            "Prev_50-54",
+            "Prof_Prev_50-54",
+            "Prev_55-59",
+            "Prof_Prev_55-59",
+            "Prev_60-63",
+            "Prof_Prev_60-63",
+            "Prev_64-67",
+            "Prof_Prev_64-67",
+            "Prev_68-71",
+            "Prof_Prev_68-71",
+            "Prev_72-75",
+            "Prof_Prev_72-75",
+            "Prev_76-79",
+            "Prof_Prev_76-79",
+            "Prev_80-84",
+            "Prof_Prev_80-84",
+            "Prev_85-89",
+            "Prof_Prev_85-89",
+            "Prev_90-100",
+            "Prof_Prev_90-100"
+        ],
+        "environment": [
+            "scikit-learn=1.6.0"
+        ],
+        "example_input": {
+            "Campus": [
+                "UBCV"
+            ],
+            "Course": [
+                110
+            ],
+            "CourseLevel": [
+                1
+            ],
+            "Course_Avg_Roll_1y": [
+                73.5864074445
+            ],
+            "Course_Max_Last_3y": [
+                91.0
+            ],
+            "Course_Min_Last_3y": [
+                71.898305085
+            ],
+            "Course_Std_Last_3y": [
+                7.270712022509893
+            ],
+            "Prev_50-54": [
+                1.0
+            ],
+            "Prev_55-59": [
+                5.0
+            ],
+            "Prev_60-63": [
+                11.0
+            ],
+            "Prev_64-67": [
+                12.0
+            ],
+            "Prev_68-71": [
+                14.0
+            ],
+            "Prev_72-75": [
+                15.0
+            ],
+            "Prev_76-79": [
+                11.0
+            ],
+            "Prev_80-84": [
+                31.0
+            ],
+            "Prev_85-89": [
+                23.0
+            ],
+            "Prev_90-100": [
+                23.0
+            ],
+            "Prev_<50": [
+                31.0
+            ],
+            "Prev_High": [
+                97.0
+            ],
+            "Prev_Low": [
+                5.0
+            ],
+            "Prev_Median": [
+                NaN
+            ],
+            "Prev_Percentile (25)": [
+                NaN
+            ],
+            "Prev_Percentile (75)": [
+                NaN
+            ],
+            "Prof_Courses_Taught": [
+                NaN
+            ],
+            "Prof_Prev_50-54": [
+                NaN
+            ],
+            "Prof_Prev_55-59": [
+                NaN
+            ],
+            "Prof_Prev_60-63": [
+                NaN
+            ],
+            "Prof_Prev_64-67": [
+                NaN
+            ],
+            "Prof_Prev_68-71": [
+                NaN
+            ],
+            "Prof_Prev_72-75": [
+                NaN
+            ],
+            "Prof_Prev_76-79": [
+                NaN
+            ],
+            "Prof_Prev_80-84": [
+                NaN
+            ],
+            "Prof_Prev_85-89": [
+                NaN
+            ],
+            "Prof_Prev_90-100": [
+                NaN
+            ],
+            "Prof_Prev_<50": [
+                NaN
+            ],
+            "Prof_Prev_High": [
+                NaN
+            ],
+            "Prof_Prev_Low": [
+                NaN
+            ],
+            "Prof_Prev_Median": [
+                NaN
+            ],
+            "Prof_Prev_Percentile (25)": [
+                NaN
+            ],
+            "Prof_Prev_Percentile (75)": [
+                NaN
+            ],
+            "Professor": [
+                ""
+            ],
+            "Session": [
+                "W"
+            ],
+            "Subject": [
+                "CPSC"
+            ],
+            "SubjectCourse": [
+                "CPSC110"
+            ],
+            "Year": [
+                2018
+            ],
+            "Years_Since_Start": [
+                4
+            ]
+        },
+        "model": {
+            "file": "ubcv_grade_predictor_ridge.joblib"
+        },
+        "model_format": "pickle",
+        "task": "tabular-regression"
+    }
+}
