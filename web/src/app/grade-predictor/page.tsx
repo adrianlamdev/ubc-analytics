@@ -1,21 +1,35 @@
 "use client";
 
-import useSWR from "swr";
+import { Separator } from "@/components/ui/separator";
 import React, { useState } from "react";
 import Link from "next/link";
+import useSWR from "swr";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { z } from "zod";
+import {
+  Check,
+  ChevronsUpDown,
+  AlertTriangle,
+  ChevronRight,
+  Info,
+  Loader,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Form,
   FormControl,
@@ -32,30 +46,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronRight, Info, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 
-const SUBJECTS = [
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Computer Science",
-  "English",
-  "History",
-] as const;
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
-const COURSES = {
-  Mathematics: ["Calculus I", "Calculus II", "Linear Algebra", "Statistics"],
-  Physics: ["Mechanics", "Electromagnetism", "Quantum Physics"],
-  Chemistry: ["Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"],
-  Biology: ["Cell Biology", "Genetics", "Ecology"],
-  "Computer Science": ["Programming", "Data Structures", "Algorithms"],
-  English: ["Literature", "Composition", "Creative Writing"],
-  History: ["World History", "US History", "European History"],
-} as const;
+const PREDICTION_RANGE = {
+  start: new Date().getFullYear(),
+  years_ahead: 2,
+};
+
+const years = Array.from({ length: PREDICTION_RANGE.years_ahead + 1 }, (_, i) =>
+  (PREDICTION_RANGE.start + i).toString(),
+);
 
 const formSchema = z.object({
-  subject: z.enum(SUBJECTS, {
+  subject: z.string({
     required_error: "Please select a subject",
   }),
   course: z.string({
@@ -66,63 +79,67 @@ const formSchema = z.object({
   }),
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
-const GradePredictor = () => {
+export default function GradePredictor() {
   const [isLoading, setIsLoading] = useState(false);
-  const [prediction, setPrediction] = useState<{
-    predictedGrade: string;
-    confidence: string;
-  } | null>(null);
   const [error, setError] = useState("");
+  const [prediction, setPrediction] = useState(null);
+  const [openSubject, setOpenSubject] = useState(false);
+  const [openCourse, setOpenCourse] = useState(false);
 
-  const form = useForm<FormValues>({
+  const { data: subjects, error: subjectsError } = useSWR(
+    "/api/v1/subjects",
+    fetcher,
+  );
+
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subject: undefined,
-      course: undefined,
-      year: undefined,
+      subject: "",
+      course: "",
+      year: "",
     },
   });
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 4 }, (_, i) =>
-    (currentYear - i).toString(),
+  const selectedSubject = form.watch("subject");
+  const { data: courses, error: coursesError } = useSWR(
+    selectedSubject
+      ? `/api/v1/subjects/courses?subject=${selectedSubject}`
+      : null,
+    fetcher,
   );
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values) => {
     setError("");
     setPrediction(null);
     setIsLoading(true);
 
     try {
-      const { subject, course, year } = values;
       const response = await fetch("/api/v1/predict", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ subject, course, year }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
 
-      if (!response.ok) {
-        setError("Failed to get prediction. Please try again.");
-      }
+      if (!response.ok) throw new Error("Failed to get prediction");
 
       const data = await response.json();
-      console.log(data);
-
-      const mockPrediction = {
-        predictedGrade: (Math.random() * 4 + 1).toFixed(2),
-        confidence: (Math.random() * 20 + 80).toFixed(1),
-      };
-      setPrediction(mockPrediction);
+      setPrediction(data);
     } catch (err) {
       setError("Failed to get prediction. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (subjectsError) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>
+          Failed to load subjects. Please refresh the page.
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 mt-8">
@@ -145,28 +162,57 @@ const GradePredictor = () => {
                   control={form.control}
                   name="subject"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Subject</FormLabel>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          form.setValue("course", "");
-                        }}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger aria-label="Select subject">
-                            <SelectValue placeholder="Select a subject" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {SUBJECTS.map((subject) => (
-                            <SelectItem key={subject} value={subject}>
-                              {subject}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openSubject} onOpenChange={setOpenSubject}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={openSubject}
+                              className="w-full justify-between"
+                            >
+                              {field.value
+                                ? subjects?.find(
+                                    (subject) =>
+                                      subject.subject_code === field.value,
+                                  )?.subject_code
+                                : "Select subject..."}
+                              <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[--radix-popover-trigger-width] min-w-[var(--radix-popover-trigger-width)]">
+                          <Command className="max-h-[300px]">
+                            <CommandInput placeholder="Search subjects..." />
+                            <CommandEmpty>No subject found.</CommandEmpty>
+                            <CommandGroup className="overflow-auto">
+                              {subjects?.map((subject) => (
+                                <CommandItem
+                                  key={subject.id}
+                                  value={subject.subject_code}
+                                  onSelect={(value) => {
+                                    form.setValue("subject", value);
+                                    form.setValue("course", "");
+                                    setOpenSubject(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === subject.subject_code
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {subject.subject_code}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormDescription>
                         Choose the main subject area
                       </FormDescription>
@@ -179,37 +225,73 @@ const GradePredictor = () => {
                   control={form.control}
                   name="course"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Course</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        disabled={!form.watch("subject")}
-                      >
-                        <FormControl>
-                          <SelectTrigger aria-label="Select course">
-                            <SelectValue
-                              placeholder={
-                                form.watch("subject")
-                                  ? "Select a course"
-                                  : "Select a subject first"
-                              }
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {form.watch("subject") &&
-                            COURSES[form.watch("subject")]?.map((course) => (
-                              <SelectItem key={course} value={course}>
-                                {course}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
+                      <Popover open={openCourse} onOpenChange={setOpenCourse}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={openCourse}
+                              className="w-full justify-between"
+                              disabled={!selectedSubject || !courses}
+                            >
+                              {field.value
+                                ? courses?.find(
+                                    (course) =>
+                                      course.course_number === field.value,
+                                  )?.course_number
+                                : !selectedSubject
+                                  ? "Select a subject first"
+                                  : !courses
+                                    ? "Loading courses..."
+                                    : "Select course..."}
+                              <ChevronsUpDown className="h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-[--radix-popover-trigger-width] min-w-[var(--radix-popover-trigger-width)]">
+                          <Command className="max-h-[300px]">
+                            <CommandInput placeholder="Search courses..." />
+                            <CommandEmpty>No course found.</CommandEmpty>
+                            <CommandGroup className="overflow-auto">
+                              {courses?.map((course) => (
+                                <CommandItem
+                                  key={course.id}
+                                  value={course.course_number}
+                                  onSelect={(value) => {
+                                    form.setValue("course", value);
+                                    setOpenCourse(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === course.course_number
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  {course.course_number}
+                                  {course.title ? ` - ${course.title}` : ""}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormDescription>
                         Select the specific course
                       </FormDescription>
                       <FormMessage />
+                      {coursesError && (
+                        <Alert variant="destructive" className="mt-2">
+                          <AlertDescription>
+                            Failed to load courses. Please try again.
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -219,14 +301,14 @@ const GradePredictor = () => {
                   name="year"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Academic Year</FormLabel>
+                      <FormLabel>Prediction Year</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger aria-label="Select academic year">
-                            <SelectValue placeholder="Select year" />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select year to predict" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -238,15 +320,32 @@ const GradePredictor = () => {
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        Select the academic year
+                        Select the year you want to predict
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                <Card className="border-amber-600/30 bg-amber-600/40 shadow">
+                  <CardHeader>
+                    <div className="flex items-start gap-2">
+                      <div>
+                        <CardTitle className="text-amber-500 text-sm font-medium flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+                          Important Disclaimer
+                        </CardTitle>
+                        <CardDescription className="mt-1.5 text-foreground">
+                          Results should be taken as rough estimates only and
+                          may not accurately reflect future performance.
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+
                 {error && (
-                  <Alert variant="destructive" role="alert">
+                  <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
@@ -255,13 +354,10 @@ const GradePredictor = () => {
                   type="submit"
                   className="w-full"
                   disabled={isLoading || !form.formState.isValid}
-                  aria-label={
-                    isLoading ? "Predicting grade..." : "Predict grade"
-                  }
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
                       <span>Predicting...</span>
                     </>
                   ) : (
@@ -271,48 +367,59 @@ const GradePredictor = () => {
               </form>
             </Form>
           </CardContent>
-
           {prediction && (
-            <CardFooter className="flex flex-col space-y-4">
-              <div
-                className="w-full p-4 bg-primary/10 rounded-lg"
-                role="alert"
-                aria-live="polite"
-              >
-                <h3 className="font-semibold text-primary">
-                  Prediction Results
-                </h3>
-                <div className="mt-2 space-y-2">
-                  <p>
-                    Predicted GPA:{" "}
-                    <span className="font-bold">
-                      {prediction.predictedGrade}
-                    </span>
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Confidence: {prediction.confidence}%
-                  </p>
-                </div>
-              </div>
+            <>
+              <Separator className="my-4" />
+              <CardFooter className="flex flex-col space-y-4 mt-10">
+                <div className="w-full p-6 bg-secondary rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-primary">
+                      Prediction Results
+                    </h3>
+                    <div className="px-2 py-1 bg-primary/20 rounded text-xs text-primary">
+                      {prediction.request_details.session}{" "}
+                      {prediction.request_details.year}
+                    </div>
+                  </div>
+                  <div className="mt-6 text-center">
+                    <p className="text-4xl font-bold tracking-tight">
+                      {prediction.predicted_avg.toFixed(1)}%
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      for {""}
+                      {prediction.request_details.subject}{" "}
+                      {prediction.request_details.course} at{" "}
+                      {prediction.request_details.campus}
+                    </p>
+                  </div>
 
-              <Button
-                size="sm"
-                variant="ghost"
-                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-                asChild
-              >
-                <Link href="/how-we-predict-grades">
-                  <Info className="w-4 h-4" />
-                  <span>Learn how we calculate this</span>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </CardFooter>
+                  <div className="my-6 border-t flex items-center justify-between text-xs text-muted-foreground">
+                    <p>
+                      Generated in{" "}
+                      {(prediction.timing.total_time * 1000).toFixed()}ms
+                    </p>
+                  </div>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0 text-xs hover:bg-transparent hover:text-primary group"
+                    asChild
+                  >
+                    <Link
+                      href="/how-we-predict-grades"
+                      className="flex items-center gap-1.5"
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                      Learn about the prediction model
+                      <ChevronRight className="group-hover:translate-x-1 transition-transform h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardFooter>
+            </>
           )}
         </Card>
       </div>
     </div>
   );
-};
-
-export default GradePredictor;
+}
