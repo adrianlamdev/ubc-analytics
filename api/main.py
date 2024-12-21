@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from enum import Enum
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 from utils.inference_utils import prepare_inference_features
@@ -6,6 +7,7 @@ from joblib import load
 import pandas as pd
 import time
 import logging
+from typing import List
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -45,6 +47,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class SortOrder(Enum):
+    HIGHEST = "highest"
+    LOWEST = "lowest"
 
 
 class InferenceRequest(BaseModel):
@@ -138,6 +145,118 @@ async def predict(request: InferenceRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Prediction failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/gpa-boosters")
+async def get_gpa_boosters(
+    limit: int = 10,
+    min_enrollment: int = 50,
+    max_year_level: int = 2,
+    include_subjects: List[str] = Query(default=[]),
+    exclude_subjects: List[str] = Query(default=[]),
+):
+    """Get predicted GPA booster courses"""
+    start_time = time.time()
+    year = pd.Timestamp.now().year
+    logger.info(f"Fetching GPA boosters for year {year}")
+    try:
+        # Clean exclude subjects
+        cleaned_exclude_subjects = []
+        for subject in exclude_subjects:
+            cleaned_exclude_subjects.extend(subject.split(","))
+        cleaned_exclude_subjects = [
+            s.strip() for s in cleaned_exclude_subjects if s.strip()
+        ]
+
+        # Clean include subjects
+        cleaned_include_subjects = []
+        for subject in include_subjects:
+            cleaned_include_subjects.extend(subject.split(","))
+        cleaned_include_subjects = [
+            s.strip() for s in cleaned_include_subjects if s.strip()
+        ]
+
+        df = get_df()
+        model = get_model()
+
+        # Time for data aggregation and filtering
+        agg_start = time.time()
+
+        # Filter by year level using integer division
+        df = df.assign(Year_Level=df["Course"].div(100).astype(int))
+        filtered_df = df[df["Year_Level"] <= max_year_level]
+
+        # Group and aggregate with year level filter
+        course_stats = (
+            filtered_df.groupby(["Subject", "Course"])
+            .agg({"Enrolled": "mean", "Avg": "mean", "Year_Level": "first"})
+            .reset_index()
+        )
+
+        # Apply enrollment filter
+        eligible_courses = course_stats[course_stats["Enrolled"] >= min_enrollment]
+
+        # Apply subject inclusions if any
+        if cleaned_include_subjects:
+            eligible_courses = eligible_courses[
+                eligible_courses["Subject"].isin(cleaned_include_subjects)
+            ]
+
+        # Apply subject exclusions if any
+        if cleaned_exclude_subjects:
+            eligible_courses = eligible_courses[
+                ~eligible_courses["Subject"].isin(cleaned_exclude_subjects)
+            ]
+
+        agg_time = round(time.time() - agg_start, 2)
+
+        # Time for predictions
+        prediction_start = time.time()
+        predictions = []
+        for _, row in eligible_courses.iterrows():
+            try:
+                features = prepare_inference_features(
+                    df, row["Subject"], row["Course"], year
+                )
+                pred = model.predict(features)[0]
+                predictions.append(
+                    {
+                        "subject": row["Subject"],
+                        "course": int(row["Course"]),
+                        "year_level": int(row["Year_Level"]),
+                        "predicted_avg": round(float(pred), 2),
+                        "historical_avg": round(float(row["Avg"]), 2),
+                    }
+                )
+            except ValueError:
+                continue
+
+        prediction_time = round(time.time() - prediction_start, 2)
+        total_time = round(time.time() - start_time, 2)
+
+        predictions.sort(key=lambda x: x["predicted_avg"], reverse=True)
+
+        return {
+            "timing": {
+                "data_aggregation": agg_time,
+                "predictions": prediction_time,
+                "total_time": total_time,
+            },
+            "metadata": {
+                "total_courses_considered": len(eligible_courses),
+                "year": year,
+                "filters": {
+                    "min_enrollment": min_enrollment,
+                    "max_year_level": max_year_level,
+                    "include_subjects": cleaned_include_subjects,
+                    "exclude_subjects": cleaned_exclude_subjects,
+                },
+            },
+            "courses": predictions[:limit],
+        }
+    except Exception as e:
+        logger.error(f"GPA boosters fetch failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

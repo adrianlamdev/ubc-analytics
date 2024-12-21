@@ -23,18 +23,11 @@ def prepare_inference_features(
         ValueError: If no historical data is found for the specified course
     """
     course_mask = (df["Subject"] == subject) & (df["Course"] == course)
-    print(f"Matching rows: {df[course_mask].shape[0]}")
-
     course_data = df[course_mask]
-    print(
-        f"Years available for {subject} {course}: {sorted(course_data['Year'].unique())}"
-    )
 
     time_mask = (df["Year"] < year) | ((df["Year"] == year) & (df["Session"] < session))
 
     filtered_df = df[course_mask & time_mask]
-    print(f"Found {len(filtered_df)} rows for {subject} {course}")
-    print(f"Time mask found data before year {year} session {session}")
 
     if len(filtered_df) == 0:
         raise ValueError(
