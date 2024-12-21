@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
+import { Separator } from "@/components/ui/separator";
+import Navbar from "@/components/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,15 +21,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className={inter.variable} lang="en" suppressHydrationWarning>
-      <body className={`antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <Navbar />
           {children}
+          {/* Footer */}
+          <footer className="p-4 mt-12 text-muted-foreground text-sm space-y-4">
+            <p className="">
+              This is an educational project and predictions should not be the
+              sole factor in course selection decisions.
+            </p>
+            <Separator />
+            <p className="">© 2024 UBC Grade Predictor</p>
+          </footer>
         </ThemeProvider>
       </body>
     </html>
