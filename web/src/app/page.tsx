@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Card,
   CardHeader,
@@ -6,14 +7,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  GraduationCap,
-  Calculator,
-  LineChart,
-  ChevronRight,
-} from "lucide-react";
+import { Calculator, LineChart, ChevronRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -28,9 +22,11 @@ export default function Home() {
           learning predictions based on historical grade data.
         </p>
         <div className="space-x-3">
-          <Button size="lg">Try it Now</Button>
-          <Button size="lg" variant="outline">
-            Learn More
+          <Button size="lg" asChild>
+            <Link href="/grade-predictor">Try it Now</Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/about">Learn More</Link>
           </Button>
         </div>
       </div>
