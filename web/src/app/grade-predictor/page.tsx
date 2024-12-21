@@ -477,15 +477,15 @@ export default function GradePredictor() {
                   <div className="flex justify-center">
                     <ChartContainer
                       config={chartConfig}
-                      className="min-h-[250px] w-full"
+                      className="min-h-[250px] w-[90vw] mr-10 mt-10"
                     >
                       <AreaChart
                         accessibilityLayer
                         data={historicalData}
-                        margin={{
-                          left: 12,
-                          right: 12,
-                        }}
+                        // margin={{
+                        //   left: 12,
+                        //   right: 12,
+                        // }}
                       >
                         <CartesianGrid vertical={false} />
                         <XAxis
