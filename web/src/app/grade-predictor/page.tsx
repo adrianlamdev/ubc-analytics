@@ -1,6 +1,5 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import React, { useState } from "react";
 import Link from "next/link";
 import useSWR from "swr";
@@ -68,15 +67,21 @@ const years = Array.from({ length: PREDICTION_RANGE.years_ahead + 1 }, (_, i) =>
 );
 
 const formSchema = z.object({
-  subject: z.string({
-    required_error: "Please select a subject",
-  }),
-  course: z.string({
-    required_error: "Please select a course",
-  }),
-  year: z.string({
-    required_error: "Please select a year",
-  }),
+  subject: z
+    .string({
+      required_error: "Please select a subject",
+    })
+    .min(1, "Please select a subject"),
+  course: z
+    .string({
+      required_error: "Please select a course",
+    })
+    .min(1, "Please select a course"),
+  year: z
+    .string({
+      required_error: "Please select a year",
+    })
+    .min(1, "Please select a year"),
 });
 
 export default function GradePredictor() {
@@ -327,6 +332,12 @@ export default function GradePredictor() {
                   )}
                 />
 
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
                 <Card className="border-amber-600/30 bg-amber-600/40 shadow">
                   <CardHeader>
                     <div className="flex items-start gap-2">
@@ -344,16 +355,16 @@ export default function GradePredictor() {
                   </CardHeader>
                 </Card>
 
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading || !form.formState.isValid}
+                  disabled={
+                    isLoading ||
+                    !form.formState.isValid ||
+                    !form.getValues("subject") ||
+                    !form.getValues("course") ||
+                    !form.getValues("year")
+                  }
                 >
                   {isLoading ? (
                     <>
@@ -367,56 +378,39 @@ export default function GradePredictor() {
               </form>
             </Form>
           </CardContent>
-          {prediction && (
-            <>
-              <Separator className="my-4" />
-              <CardFooter className="flex flex-col space-y-4 mt-10">
-                <div className="w-full p-6 bg-secondary rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-primary">
-                      Prediction Results
-                    </h3>
-                    <div className="px-2 py-1 bg-primary/20 rounded text-xs text-primary">
-                      {prediction.request_details.session}{" "}
-                      {prediction.request_details.year}
-                    </div>
-                  </div>
-                  <div className="mt-6 text-center">
-                    <p className="text-4xl font-bold tracking-tight">
-                      {prediction.predicted_avg.toFixed(1)}%
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      for {""}
-                      {prediction.request_details.subject}{" "}
-                      {prediction.request_details.course} at{" "}
-                      {prediction.request_details.campus}
-                    </p>
-                  </div>
 
-                  <div className="my-6 border-t flex items-center justify-between text-xs text-muted-foreground">
-                    <p>
-                      Generated in{" "}
-                      {(prediction.timing.total_time * 1000).toFixed()}ms
-                    </p>
-                  </div>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="h-auto p-0 text-xs hover:bg-transparent hover:text-primary group"
-                    asChild
-                  >
-                    <Link
-                      href="/how-we-predict-grades"
-                      className="flex items-center gap-1.5"
-                    >
-                      <Info className="h-3.5 w-3.5" />
-                      Learn about the prediction model
-                      <ChevronRight className="group-hover:translate-x-1 transition-transform h-4 w-4" />
-                    </Link>
-                  </Button>
+          {prediction && (
+            <CardFooter className="flex flex-col space-y-4">
+              <div className="w-full p-4 bg-primary/10 rounded-lg">
+                <h3 className="font-semibold text-primary">
+                  Prediction Results
+                </h3>
+                <div className="mt-2 space-y-2">
+                  <p>
+                    Predicted GPA:{" "}
+                    <span className="font-bold">
+                      {prediction.predictedGrade}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Confidence: {prediction.confidence}%
+                  </p>
                 </div>
-              </CardFooter>
-            </>
+              </div>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                asChild
+              >
+                <Link href="/how-we-predict-grades">
+                  <Info className="w-4 h-4" />
+                  <span>Learn how we calculate this</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </CardFooter>
           )}
         </Card>
       </div>
