@@ -96,7 +96,22 @@ const GradePredictor = () => {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const { subject, course, year } = values;
+      const response = await fetch("/api/v1/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ subject, course, year }),
+      });
+
+      if (!response.ok) {
+        setError("Failed to get prediction. Please try again.");
+      }
+
+      const data = await response.json();
+      console.log(data);
+
       const mockPrediction = {
         predictedGrade: (Math.random() * 4 + 1).toFixed(2),
         confidence: (Math.random() * 20 + 80).toFixed(1),
