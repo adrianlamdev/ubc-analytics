@@ -5,6 +5,7 @@ export async function POST(req: NextRequest) {
 
   const { subject, course, year } = body;
 
+  // TODO: add validation
   const response = await fetch("http://localhost:8000/api/v1/predict", {
     method: "POST",
     headers: {
