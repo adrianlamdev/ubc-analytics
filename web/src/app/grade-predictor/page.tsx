@@ -15,7 +15,6 @@ import {
   Loader,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -45,7 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -54,7 +53,25 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { fetcher } from "@/lib/utils";
+import {
+  Area,
+  AreaChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltipContent,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartLegend,
+  ChartConfig,
+} from "@/components/ui/chart";
 
 const PREDICTION_RANGE = {
   start: new Date().getFullYear(),
@@ -83,12 +100,28 @@ const formSchema = z.object({
     .min(1, "Please select a year"),
 });
 
+const chartConfig = {
+  predicted: {
+    label: "Predicted Average",
+    color: "hsl(var(--chart-1))",
+  },
+  historical: {
+    label: "Historical Average",
+    color: "hsl(var(--chart-2))",
+  },
+  historical_predicted: {
+    label: "Historical Predicted Average",
+    color: "hsl(var(--chart-3))",
+  },
+} satisfies ChartConfig;
+
 export default function GradePredictor() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [prediction, setPrediction] = useState(null);
   const [openSubject, setOpenSubject] = useState(false);
   const [openCourse, setOpenCourse] = useState(false);
+  const [historicalData, setHistoricalData] = useState([]);
 
   const { data: subjects, error: subjectsError } = useSWR(
     "/api/v1/subjects",
@@ -128,6 +161,7 @@ export default function GradePredictor() {
 
       const data = await response.json();
       setPrediction(data);
+      setHistoricalData(data.historical_data);
     } catch (err) {
       setError("Failed to get prediction. Please try again.");
     } finally {
@@ -426,6 +460,73 @@ export default function GradePredictor() {
                     </Link>
                   </Button>
                 </div>
+
+                {historicalData.length == 0 ? (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertTitle>
+                      Error fetching data for{" "}
+                      {prediction.request_details.subject}:{" "}
+                      {prediction.request_details.course}
+                    </AlertTitle>
+                    <AlertDescription>
+                      This course does not have enough historical data to render
+                      a chart.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="flex justify-center">
+                    <ChartContainer
+                      config={chartConfig}
+                      className="min-h-[250px] w-full"
+                    >
+                      <AreaChart
+                        accessibilityLayer
+                        data={historicalData}
+                        margin={{
+                          left: 12,
+                          right: 12,
+                        }}
+                      >
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                          dataKey="year"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          tickFormatter={(value) => value.split("-")[0]} // Display only the year part
+                        />
+                        <YAxis />
+                        <ChartTooltip
+                          cursor={false}
+                          content={<ChartTooltipContent indicator="dot" />}
+                        />
+                        <ChartLegend content={<ChartLegendContent />} />
+                        <Area
+                          dataKey="average"
+                          type="natural"
+                          fill="var(--color-historical)"
+                          stroke="var(--color-historical)"
+                          name={chartConfig.historical.label}
+                        />
+                        <Area
+                          dataKey="predicted_avg"
+                          type="natural"
+                          fill="var(--color-predicted)"
+                          stroke="var(--color-predicted)"
+                          name={chartConfig.predicted.label}
+                        />
+                        {/* Add historical predicted area */}
+                        <Area
+                          dataKey="historical_predicted"
+                          type="natural"
+                          fill="var(--color-historical-predicted)"
+                          stroke="var(--color-historical-predicted)"
+                          name={chartConfig.historical_predicted.label}
+                        />
+                      </AreaChart>
+                    </ChartContainer>
+                  </div>
+                )}
               </CardFooter>
             </>
           )}

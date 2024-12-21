@@ -107,6 +107,71 @@ async def predict(request: InferenceRequest):
         model = get_model()
         df = get_df()
 
+        try:
+            historical_mask = (df["Subject"] == request.subject) & (
+                df["Course"] == request.course
+            )
+
+            historical = df[historical_mask][["Year", "Session", "Avg", "Enrolled"]]
+
+            # Check if we got any data
+            if len(historical) > 0:
+                logger.info(f"Raw historical data:\n{historical.head()}")  # Debugging
+
+                # Aggregate by Year and Session
+                historical_aggregated = (
+                    historical.groupby(["Year", "Session"])
+                    .agg({"Avg": "mean", "Enrolled": "mean"})
+                    .reset_index()
+                )
+
+                logger.info(
+                    f"Aggregated historical data:\n{historical_aggregated.head()}"
+                )  # Debugging
+
+                if len(historical_aggregated) > 0:
+                    historical_data = []
+                    for _, row in historical_aggregated.sort_values(
+                        ["Year", "Session"]
+                    ).iterrows():
+                        historical_feature = prepare_inference_features(
+                            df,
+                            request.subject,
+                            request.course,
+                            int(row["Year"]),
+                            request.campus,
+                            request.session,
+                            request.professor,
+                        )
+                        historical_prediction = model.predict(historical_feature)[0]
+                        historical_data.append(
+                            {
+                                "year": f"{row['Year']}-{row['Session']}",
+                                "average": round(float(row["Avg"]), 2)
+                                if pd.notnull(row["Avg"])
+                                else None,
+                                "enrollment": int(row["Enrolled"])
+                                if pd.notnull(row["Enrolled"])
+                                else None,
+                                "predicted_avg": round(float(historical_prediction), 2),
+                            }
+                        )
+                    logger.info(
+                        f"Found {len(historical_data)} historical records with predictions"
+                    )
+                else:
+                    historical_data = []
+                    logger.info("No aggregated historical records found")
+            else:
+                historical_data = []
+                logger.info("No raw historical records found")
+
+            logger.info(f"Found {len(historical_data)} historical records")
+
+        except Exception as e:
+            logger.warning(f"Error processing historical data: {str(e)}")
+            historical_data = []
+
         input_features = prepare_inference_features(
             df,
             request.subject,
@@ -139,6 +204,7 @@ async def predict(request: InferenceRequest):
                 "total_time": round(feature_time + inference_time, 2),
             },
             "predicted_avg": round(float(output[0]), 2),
+            "historical_data": historical_data,
         }
     except ValueError as e:
         logger.error(f"Prediction failed: {str(e)}")
