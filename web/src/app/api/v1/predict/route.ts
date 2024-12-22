@@ -6,13 +6,16 @@ export async function POST(req: NextRequest) {
   const { subject, course, year } = body;
 
   // TODO: add validation
-  const response = await fetch("http://localhost:8000/api/v1/predict", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gpa-boosters?`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ subject, course, year }),
     },
-    body: JSON.stringify({ subject, course, year }),
-  });
+  );
 
   if (!response.ok) {
     return NextResponse.error();

@@ -221,6 +221,7 @@ async def get_gpa_boosters(
     max_year_level: int = 2,
     include_subjects: List[str] = Query(default=[]),
     exclude_subjects: List[str] = Query(default=[]),
+    min_historical_avg: float = 80,
 ):
     """Get predicted GPA booster courses"""
     start_time = time.time()
@@ -260,8 +261,11 @@ async def get_gpa_boosters(
             .reset_index()
         )
 
-        # Apply enrollment filter
-        eligible_courses = course_stats[course_stats["Enrolled"] >= min_enrollment]
+        # Apply enrollment and historical average filters
+        eligible_courses = course_stats[
+            (course_stats["Enrolled"] >= min_enrollment)
+            & (course_stats["Avg"] >= min_historical_avg)
+        ]
 
         # Apply subject inclusions if any
         if cleaned_include_subjects:
@@ -315,6 +319,7 @@ async def get_gpa_boosters(
                 "filters": {
                     "min_enrollment": min_enrollment,
                     "max_year_level": max_year_level,
+                    "min_historical_avg": min_historical_avg,
                     "include_subjects": cleaned_include_subjects,
                     "exclude_subjects": cleaned_exclude_subjects,
                 },

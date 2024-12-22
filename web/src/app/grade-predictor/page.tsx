@@ -371,23 +371,16 @@ export default function GradePredictor() {
                   </Alert>
                 )}
 
-                <Card className="border-amber-600/30 bg-amber-600/40 shadow">
-                  <CardHeader>
-                    <div className="flex items-start gap-2">
-                      <div>
-                        <CardTitle className="text-amber-500 text-sm font-medium flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                          Important Disclaimer
-                        </CardTitle>
-                        <CardDescription className="mt-1.5 text-foreground">
-                          Results should be taken as rough estimates only and
-                          may not accurately reflect future performance.
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                </Card>
-
+                <Alert className="border-amber-600/30 bg-amber-600/40 shadow">
+                  <AlertTitle className="text-amber-500 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
+                    Important
+                  </AlertTitle>
+                  <AlertDescription className="text-sm mt-1.5">
+                    Results should be taken as rough estimates only and may not
+                    accurately reflect future performance.
+                  </AlertDescription>
+                </Alert>
                 <Button
                   type="submit"
                   className="w-full"
@@ -414,8 +407,8 @@ export default function GradePredictor() {
 
           {prediction && (
             <>
-              <Separator className="my-4" />
-              <CardFooter className="flex flex-col space-y-4 mt-10">
+              <Separator className="my-8" />
+              <CardFooter className="flex flex-col space-y-4">
                 <div className="w-full p-6 bg-secondary rounded-lg">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-primary">
