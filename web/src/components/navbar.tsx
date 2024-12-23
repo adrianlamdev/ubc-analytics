@@ -244,7 +244,7 @@ const ListItem = React.forwardRef<
             <div className="flex flex-col gap-1">
               <span className="text-sm font-medium leading-none">{title}</span>
               {description && (
-                <span className="line-clamp-2 text-xs leading-snug text-muted-foreground group-hover:text-accent-foreground transition-colors">
+                <span className="line-clamp-2 text-xs leading-snug text-muted-foreground group-hover:text-accent-foreground transition-colors text-nowrap">
                   {description}
                 </span>
               )}
