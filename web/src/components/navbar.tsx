@@ -203,7 +203,7 @@ export default function Navbar() {
                 asChild
               >
                 <Link
-                  href="https://github.com/adrianlamdev/ubc-grades-analysis"
+                  href="https://github.com/adrianlamdev/ubc-analytics"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}
@@ -221,7 +221,7 @@ export default function Navbar() {
 }
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
+  React.ElementProps<"a">,
   React.ComponentPropsWithoutRef<"a"> & {
     icon?: React.ReactNode;
     title: string;

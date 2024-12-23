@@ -184,88 +184,100 @@ export default function About() {
       </Card>
 
       {/* FAQ Section */}
-      <Card className="mt-8">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <CardTitle>Frequently Asked Questions</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-left">
-                How accurate are the predictions?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                The model's accuracy varies depending on the course and
-                available historical data. Predictions should be taken as
-                estimates rather than definitive values.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-left">
-                What factors influence the predictions?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                The primary factors are historical course averages and recent
-                performance trends. The analysis shows that temporal features
-                (year) have less impact than expected.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left">
-                How is the model validated?
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                Using time series cross-validation to ensure the model's
-                performance is evaluated on future data points, similar to
-                real-world usage.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </Card>
+      <FAQ />
 
       {/* Experimental Section */}
-      <Card className="mt-8">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <FlaskConical className="h-5 w-5 text-primary" />
-            <CardTitle>Ongoing Experiments</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Current experiments include:
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-            <li>Testing different ML models for improved accuracy</li>
-            <li>MLOps pipeline optimization</li>
-            <li>Model monitoring and retraining strategies</li>
-            <li>
-              Assessment Analytics & Grade Scaling Prediction
-              <ul className="list-disc list-inside ml-6 mt-2 text-xs">
-                <li>Grade scaling pattern analysis</li>
-                <li>Course-specific grading trend predictions</li>
-                <li>Assessment weight impact analysis</li>
-              </ul>
-            </li>
-            <li>
-              Course Similarity Engine
-              <ul className="list-disc list-inside ml-6 mt-2 text-xs">
-                <li>Grade distribution pattern matching</li>
-                <li>Student performance correlation analysis</li>
-                <li>
-                  Clustering with respect to course complexity (according to
-                  grade) or course content
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <ExperimentalSection />
     </div>
+  );
+}
+
+function FAQ() {
+  return (
+    <Card className="mt-8">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <CardTitle>Frequently Asked Questions</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger className="text-left">
+              How accurate are the predictions?
+            </AccordionTrigger>
+            <AccordionContent className="text-muted-foreground">
+              The model's accuracy varies depending on the course and available
+              historical data. Predictions should be taken as estimates rather
+              than definitive values.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-2">
+            <AccordionTrigger className="text-left">
+              What factors influence the predictions?
+            </AccordionTrigger>
+            <AccordionContent className="text-muted-foreground">
+              The primary factors are historical course averages and recent
+              performance trends. The analysis shows that temporal features
+              (year) have less impact than expected.
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="item-3">
+            <AccordionTrigger className="text-left">
+              How is the model validated?
+            </AccordionTrigger>
+            <AccordionContent className="text-muted-foreground">
+              Using time series cross-validation to ensure the model's
+              performance is evaluated on future data points, similar to
+              real-world usage.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ExperimentalSection() {
+  return (
+    <Card className="mt-8">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <FlaskConical className="h-5 w-5 text-primary" />
+          <CardTitle>Ongoing Experiments</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Current experiments include:
+        </p>
+        <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
+          <li>Testing different ML models for improved accuracy</li>
+          <li>MLOps pipeline optimization</li>
+          <li>Model monitoring and retraining strategies</li>
+          <li>
+            Assessment Analytics & Grade Scaling Prediction
+            <ul className="list-disc list-inside ml-6 mt-2 text-xs">
+              <li>Grade scaling pattern analysis</li>
+              <li>Course-specific grading trend predictions</li>
+              <li>Assessment weight impact analysis</li>
+            </ul>
+          </li>
+          <li>
+            Course Similarity Engine
+            <ul className="list-disc list-inside ml-6 mt-2 text-xs">
+              <li>Grade distribution pattern matching</li>
+              <li>Student performance correlation analysis</li>
+              <li>
+                Clustering with respect to course complexity (according to
+                grade) or course content
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </CardContent>
+    </Card>
   );
 }

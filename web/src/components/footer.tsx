@@ -53,7 +53,7 @@ export default function Footer() {
                 asChild
               >
                 <Link
-                  href="https://github.com/adrianlamdev/ubc-grades-analysis"
+                  href="https://github.com/adrianlamdev/ubc-analytics"
                   className="flex items-center gap-2"
                   target="_blank"
                   rel="noopener noreferrer"
