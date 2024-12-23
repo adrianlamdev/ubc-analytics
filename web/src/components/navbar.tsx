@@ -1,12 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "./ui/tooltip";
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -35,7 +29,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 
 const toolsItems = [
   {
