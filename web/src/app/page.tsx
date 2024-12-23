@@ -23,11 +23,12 @@ export default function Home() {
           transition={{ duration: 0.5 }}
         >
           <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Get insights on grades and trends at UBC.
+            Smart analytics powered by ML.
           </h1>
           <p className="text-muted-foreground my-12 text-lg">
-            Make informed decisions about your course selection using machine
-            learning predictions based on historical grade data.
+            Make informed decisions with machine learning predictions for
+            grades, course patterns, and campus activity based on historical UBC
+            data.
           </p>
           <div className="space-x-4">
             <Button
@@ -132,37 +133,54 @@ export default function Home() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="text-left">
-                    How accurate are the predictions?
+                    What kind of insights does the platform provide?
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground text-left">
-                    Our predictions are based on historical grade data and
-                    various factors like course difficulty, instructor history,
-                    and enrollment patterns. While no prediction is perfect, our
-                    model provides a data-driven estimate to help inform your
-                    decisions.
+                    Our platform offers two main types of insights: academic
+                    predictions (including course grades and patterns) and
+                    campus analytics (such as location activity levels and
+                    optimal study times, also coming soon). All insights are
+                    data-driven and powered by machine learning.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="text-left">
-                    What data is used for predictions?
+                    What data sources do you use?
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground text-left">
-                    We analyze anonymized historical grade data from UBC
-                    courses, including factors like average grades, enrollment
-                    numbers, and course levels. All predictions are made using
-                    publicly available data.
+                    We use UBC PAIR data for historical course information
+                    (grades, enrollment numbers, etc.) and integrate with Google
+                    Maps/Places API for real-time campus activity levels. All of
+                    our data comes from these public sources to ensure
+                    reliability and transparency.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="text-left">
+                    How accurate are the predictions?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-left">
+                    Accuracy varies by prediction type. For grade predictions,
+                    our model explains about 52% of grade variance (R² score),
+                    with a root mean square error of 5.02 and mean absolute
+                    percentage error of 4.84%. Campus activity predictions are
+                    sourced directly from Google Maps data. We're transparent
+                    about our model's performance and continuously work to
+                    improve it.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-4">
+                  <AccordionTrigger className="text-left">
                     How often is the data updated?
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground text-left">
-                    Our database is updated regularly with new grade data as it
-                    becomes available. The model is retrained periodically to
-                    maintain accuracy and incorporate the latest trends.
+                    Grade data is updated each term as new information becomes
+                    available. Campus activity data is updated more frequently,
+                    typically in real-time or near-real-time, to provide current
+                    insights.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

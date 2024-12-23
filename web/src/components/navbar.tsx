@@ -40,9 +40,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
           >
-            UBC Grade Predictor
+            UBC Analytics
           </Link>
 
           {/* Desktop Navigation */}
@@ -85,7 +85,7 @@ export default function Navbar() {
             <SheetContent className="w-[300px] sm:w-[400px]">
               <SheetHeader>
                 <SheetTitle className="text-left font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  UBC Grade Predictor
+                  UBC Analytics
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-1">
@@ -110,7 +110,7 @@ export default function Navbar() {
                   asChild
                 >
                   <Link
-                    href="https://github.com/yourusername/project"
+                    href="https://github.com/adrianlamdev/ubc-grades-analysis"
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setOpen(false)}

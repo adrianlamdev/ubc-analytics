@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Inter } from "next/font/google";
 import { Separator } from "@/components/ui/separator";
 import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,15 +32,7 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
-          {/* Footer */}
-          <footer className="p-4 mt-12 text-muted-foreground text-sm space-y-4">
-            <p className="">
-              This is an educational project and predictions should not be the
-              sole factor in course selection decisions.
-            </p>
-            <Separator />
-            <p className="">© 2024 UBC Grade Predictor</p>
-          </footer>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

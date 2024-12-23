@@ -58,15 +58,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { fetcher } from "@/lib/utils";
-import {
-  Area,
-  AreaChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import {
   ChartContainer,
   ChartTooltipContent,
@@ -183,7 +175,7 @@ export default function GradePredictor() {
   }
 
   return (
-    <div className="min-h-screen p-4 mt-8">
+    <div className="min-h-screen p-4 mt-20">
       <div className="max-w-2xl mx-auto space-y-6">
         <Card>
           <CardHeader>
