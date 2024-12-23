@@ -59,8 +59,9 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {navigationItems.map((item) =>
-              item.comingSoon ? (
+            {navigationItems.map((item) => (
+              <div key={item.name}>
+                item.comingSoon ? (
                 <TooltipProvider>
                   <Tooltip key={item.name}>
                     <TooltipTrigger asChild>
@@ -77,7 +78,7 @@ export default function Navbar() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              ) : (
+                ) : (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -86,8 +87,9 @@ export default function Navbar() {
                   <item.icon className="h-4 w-4" />
                   {item.name}
                 </Link>
-              ),
-            )}
+                ),
+              </div>
+            ))}
           </div>
 
           {/* Mobile Navigation */}

@@ -242,7 +242,6 @@ export default function About() {
           </p>
           <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
             <li>Testing different ML models for improved accuracy</li>
-            <li>Feature engineering experiments</li>
             <li>MLOps pipeline optimization</li>
             <li>Model monitoring and retraining strategies</li>
             <li>
