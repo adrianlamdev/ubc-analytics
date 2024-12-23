@@ -2,7 +2,7 @@ from enum import Enum
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
-from utils.inference_utils import prepare_inference_features
+from src.utils.inference import prepare_inference_features
 from joblib import load
 import pandas as pd
 import time
@@ -512,9 +512,3 @@ async def test_db_connection():
     except Exception as e:
         logger.error(f"Database test failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
