@@ -17,9 +17,6 @@ export default function Footer() {
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-8">
-          {/* Column 1: Main Info */}
-
-          {/* Column 2: Quick Links */}
           <div className="space-y-4">
             <h4 className="font-medium text-sm">Quick Links</h4>
             <nav className="flex flex-col space-y-2">
@@ -44,7 +41,6 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Column 3: Resources & Connect */}
           <div className="space-y-4">
             <h4 className="font-medium text-sm">Resources & Connect</h4>
             <div className="flex flex-col space-y-2">
@@ -99,20 +95,17 @@ export default function Footer() {
         <div className="mt-8 pt-4 border-t space-y-4">
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-            <p className="leading-relaxed">
-              This is an educational project and should not be the sole factor
-              in course selection decisions. Data is sourced from UBC PAIR
-              reports but this project is not officially affiliated with UBC.
+            <p className="leading-relaxed text-muted-foreground">
+              This educational tool is designed to assist with course planning
+              and to be an overall analysis of UBC activity. It should not be
+              the sole factor in your decisions. We are not officially
+              affiliated with UBC.
             </p>
           </div>
           <Separator />
 
           <p className="text-muted-foreground text-center text-xs">
             Built with ♥️ by Adrian Lam
-          </p>
-
-          <p className="text-muted-foreground text-xs">
-            © {new Date().getFullYear()} UBC Analytics. All rights reserved.
           </p>
         </div>
       </div>
