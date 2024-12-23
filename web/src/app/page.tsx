@@ -14,7 +14,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="min-h-screen p-4 mt-14">
+    <div className="min-h-screen p-4 mt-32">
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto text-center space-y-6">
         <motion.div
