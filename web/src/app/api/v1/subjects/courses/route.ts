@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import logger from "@/utils/logger";
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -9,6 +10,7 @@ export async function GET(req: NextRequest) {
     const subject = searchParams.get("subject");
 
     if (!subject) {
+      logger.error("Subject parameter is required");
       return NextResponse.json(
         { error: "Subject parameter is required" },
         { status: 400 },
@@ -23,9 +25,10 @@ export async function GET(req: NextRequest) {
       ORDER BY c.course_number ASC
     `;
 
+    logger.info({ courses }, "Successfully fetched courses");
     return NextResponse.json(courses);
   } catch (error) {
-    console.error("Database query failed:", error);
+    logger.error({ error }, "Database query failed");
     return NextResponse.json(
       { error: "Failed to fetch courses" },
       { status: 500 },

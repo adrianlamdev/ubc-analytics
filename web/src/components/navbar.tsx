@@ -60,7 +60,7 @@ const navigationItems = [
   },
   {
     name: "GitHub",
-    href: "",
+    href: "https://github.com/adrianlamdev/ubc-analytics",
     icon: Github,
   },
 ];

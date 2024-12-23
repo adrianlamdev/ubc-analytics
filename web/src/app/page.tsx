@@ -35,14 +35,15 @@ function Hero() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      className="flex flex-col items-center"
     >
       <h1
-        className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"
+        className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent max-w-3xl"
         aria-label="Get Data-Driven Insights with UBC Analytics"
       >
-        Get Data-Driven Insights with UBC Analytics
+        Get Data-Driven Insights around UBC Campus
       </h1>
-      <p className="text-muted-foreground my-12 text-lg">
+      <p className="text-muted-foreground my-12 text-lg lg:max-w-2xl text-center">
         Understand course patterns, campus activity, and make informed decisions
         based on real-time and historical UBC data.
       </p>
