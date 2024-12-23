@@ -58,6 +58,11 @@ const navigationItems = [
     href: "/about",
     icon: Info,
   },
+  {
+    name: "GitHub",
+    href: "",
+    icon: Github,
+  },
 ];
 
 export default function Navbar() {
@@ -97,7 +102,7 @@ export default function Navbar() {
               </NavigationMenuItem>
 
               {navigationItems.map((item) => (
-                <NavigationMenuItem key={item.name}>
+                <NavigationMenuItem key={item.name} className="flex gap-2">
                   {item.comingSoon ? (
                     <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground/50 cursor-default">
                       <item.icon className="h-4 w-4" />
@@ -108,12 +113,8 @@ export default function Navbar() {
                     </span>
                   ) : (
                     <Link href={item.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        <span className="flex items-center gap-2">
-                          {item.name}
-                        </span>
+                      <NavigationMenuLink className="px-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        <span className="flex items-center">{item.name}</span>
                       </NavigationMenuLink>
                     </Link>
                   )}
