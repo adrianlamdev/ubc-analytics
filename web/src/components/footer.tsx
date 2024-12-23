@@ -5,12 +5,15 @@ import { Button } from "./ui/button";
 
 export default function Footer() {
   return (
-    <footer className="border-t">
+    <footer className="border-t mt-14">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <Link
+            href="/"
+            className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
+          >
             UBC Analytics
-          </h3>
+          </Link>
           <p className="text-sm text-muted-foreground leading-relaxed">
             An experimental project exploring course data analytics and machine
             learning. All predictions should be considered as estimates only.

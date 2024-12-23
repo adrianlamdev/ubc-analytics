@@ -37,7 +37,7 @@ import {
 
 export default function About() {
   return (
-    <div className="min-h-screen p-4 container mx-auto max-w-4xl py-8 space-y-8 mt-20">
+    <div className="min-h-screen p-4 container mx-auto max-w-4xl pt-8 space-y-8 mt-20">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

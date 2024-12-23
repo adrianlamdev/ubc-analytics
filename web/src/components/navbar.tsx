@@ -106,29 +106,19 @@ export default function Navbar() {
               {navigationItems.map((item) => (
                 <NavigationMenuItem key={item.name}>
                   {item.comingSoon ? (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
-                            <item.icon className="h-4 w-4" />
-                            {item.name}
-                            <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
-                              Coming Soon
-                            </span>
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Coming Soon</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground/50 cursor-default">
+                      <item.icon className="h-4 w-4" />
+                      {item.name}
+                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                        Coming Soon
+                      </span>
+                    </span>
                   ) : (
                     <Link href={item.href} legacyBehavior passHref>
                       <NavigationMenuLink
                         className={navigationMenuTriggerStyle()}
                       >
                         <span className="flex items-center gap-2">
-                          <item.icon className="h-4 w-4" />
                           {item.name}
                         </span>
                       </NavigationMenuLink>
