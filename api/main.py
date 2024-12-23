@@ -200,20 +200,26 @@ async def log_requests(request, call_next):
     return response
 
 
-@app.get("/")
-async def health_check() -> Dict:
-    """Basic health check endpoint"""
+@app.get("/health")
+async def healthcheck():
     try:
-        get_model()
-        get_df()
+        # Check critical components
+        model = get_model()
+        df = get_df()
+        with get_db() as db:
+            db.execute(text("SELECT 1"))
+
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now(UTC).isoformat(),
+            "components": {
+                "model": "loaded",
+                "data": "loaded",
+                "database": "connected",
+            },
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Health check failed {str(e)}")
-    return {
-        "status": "healthy",
-        "version": "1.0.0",
-        "model_loaded": MODEL is not None,
-        "data_loaded": DF is not None,
-    }
+        raise HTTPException(status_code=503, detail=f"Service unhealthy: {str(e)}")
 
 
 @app.get("/health/detailed")
