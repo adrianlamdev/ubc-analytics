@@ -20,6 +20,7 @@ from pydantic_settings import BaseSettings
 from functools import lru_cache
 import hashlib
 import os
+from contextlib import asynccontextmanager
 
 
 # Prometheus metrics
@@ -80,7 +81,7 @@ class InferenceRequest(BaseModel):
         return v.upper()
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "subject": "CPSC",
                 "course": 110,
@@ -93,26 +94,44 @@ class InferenceRequest(BaseModel):
 
 
 def get_model():
-    global MODEL
     if MODEL is None:
-        try:
-            MODEL = load("models/ubcv_grade_predictor_ridge_v1.joblib")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Model not loaded")
     return MODEL
 
 
 def get_df():
-    global DF
     if DF is None:
-        try:
-            DF = pd.read_csv("data/ubcv_grades_processed_tableau_all.csv")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="DataFrame not loaded")
     return DF
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(f"Starting up on port: {os.getenv('PORT')}")
+
+    # Load model and dataframe
+    global MODEL, DF
+    try:
+        logger.info("Loading ubcv_grade_predictor_ridge_v1 model...")
+        MODEL = load("models/ubcv_grade_predictor_ridge_v1.joblib")
+        logger.info("Model loaded successfully")
+        logger.info("Loading ubcv_grades_processed_tableau_all.csv...")
+        DF = pd.read_csv("data/ubcv_grades_processed_tableau_all.csv")
+        logger.info("DataFrame loaded successfully")
+        logger.info("TODO: Starting Prometheus metrics server...")
+        logger.info("Startup complete")
+    except Exception as e:
+        logger.error(f"Error during startup: {e}")
+        raise e
+
+    yield
+
+    logger.info("Shutting down...")
+    MODEL = None
+    DF = None
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
