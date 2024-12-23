@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import logger from "@/utils/logger";
 
 // TODO: move to shared schema.ts file
 const querySchema = z.object({
@@ -53,9 +54,10 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await response.json();
+    logger.info({ data }, "Successfully fetched GPA boosters");
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in GPA boosters route:", error);
+    logger.error({ error }, "Error in GPA boosters route");
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { detail: "Invalid request parameters", errors: error.errors },
