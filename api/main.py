@@ -1,13 +1,14 @@
 from enum import Enum
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, field_validator
 from src.utils.inference import prepare_inference_features
 from joblib import load
 import pandas as pd
 import time
 import structlog
-from typing import List
+from typing import List, Dict
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
 from database import init_db, get_db, create_db_engine
 from models import RequestLog
@@ -15,6 +16,10 @@ from sqlalchemy import func, case, select, text
 from sqlalchemy.sql import text as sql_text
 from datetime import datetime, timedelta, timezone, UTC
 import psutil
+from pydantic_settings import BaseSettings
+from functools import lru_cache
+import hashlib
+import os
 
 
 # Prometheus metrics
@@ -33,6 +38,20 @@ DF = None
 logger = structlog.get_logger()
 engine = create_db_engine()
 init_db(engine)
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str = "postgresql://user:password@localhost:5432/db"
+    MODEL_PATH: str = "models/ubcv_grade_predictor_ridge_v1.joblib"
+    DATA_PATH: str = "data/ubcv_grades_processed_tableau_all.csv"
+    ALLOWED_ORIGINS: list = ["http://localhost:3000"]
+    PROMETHEUS_PORT: int = 9090
+
+    class Config:
+        env_file = ".env"
+
+
+settings = Settings()
 
 
 class SortOrder(Enum):
@@ -104,6 +123,39 @@ app.add_middleware(
 )
 
 
+@lru_cache(maxsize=1)
+def get_model_version():
+    with open(settings.MODEL_PATH, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
+
+
+@app.get("/api/v1/model-info")
+async def get_model_info():
+    return {
+        "version": get_model_version(),
+        "last_updated": os.path.getmtime(settings.MODEL_PATH),
+        "size": os.path.getsize(settings.MODEL_PATH),
+    }
+
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal server error",
+            "detail": str(exc) if settings.DEBUG else "An unexpected error occurred",
+        },
+    )
+
+
+class DetailedHTTPException(HTTPException):
+    def __init__(self, status_code: int, detail: str, code: str):
+        super().__init__(status_code=status_code, detail=detail)
+        self.code = code
+
+
 @app.middleware("http")
 async def log_requests(request, call_next):
     CONCURRENT_REQUESTS.inc()
@@ -150,13 +202,38 @@ async def log_requests(request, call_next):
 
 @app.get("/")
 async def health_check():
-    """Basic health check endpoint that also verifies model loading"""
+    """Basic health check endpoint"""
     try:
         get_model()
         get_df()
-        return {"status": "ok", "message": "Model and data loaded successfully"}
+        return {"hello": "world"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
+
+
+@app.get("/health")
+async def health_check() -> Dict:
+    return {
+        "status": "healthy",
+        "version": "1.0.0",
+        "model_loaded": MODEL is not None,
+        "data_loaded": DF is not None,
+    }
+
+
+@app.get("/health/detailed")
+async def detailed_health_check() -> Dict:
+    """Detailed health check endpoint"""
+    # TODO: Implement this endpoint
+    health_status = {
+        "status": "healthy",
+        "components": {
+            "database": check_database_connection(),
+            "model": check_model_status(),
+            "memory": check_memory_usage(),
+        },
+    }
+    return health_status
 
 
 @app.get("/api/v1/subjects")
