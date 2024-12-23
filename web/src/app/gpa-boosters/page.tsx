@@ -437,7 +437,7 @@ export default function GpaBoosters() {
                           </div>
 
                           {/* Additional Stats */}
-                          <div className="mt-6 pt-4 border-t border-border/50">
+                          <div className="mt-6 pt-4 border-t">
                             <div className="flex items-center justify-between text-sm text-muted-foreground">
                               <TooltipProvider>
                                 <Tooltip>

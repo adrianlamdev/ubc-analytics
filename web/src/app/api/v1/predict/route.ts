@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
   // TODO: add validation
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gpa-boosters?`,
+    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/predict`,
     {
       method: "POST",
       headers: {

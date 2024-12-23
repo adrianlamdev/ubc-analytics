@@ -13,6 +13,9 @@ import {
   ChevronRight,
   Info,
   Loader,
+  TrendingUp,
+  BookOpen,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -409,58 +412,81 @@ export default function GradePredictor() {
             <>
               <Separator className="my-8" />
               <CardFooter className="flex flex-col space-y-4">
-                <div className="w-full p-6 bg-secondary rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-primary">
-                      Prediction Results
-                    </h3>
-                    <div className="px-2 py-1 bg-primary/20 rounded text-xs text-primary">
-                      {prediction.request_details.session}{" "}
-                      {prediction.request_details.year}
-                    </div>
-                  </div>
-                  <div className="mt-6 text-center">
-                    <p className="text-4xl font-bold tracking-tight">
-                      {prediction.predicted_avg.toFixed(1)}%
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      for {""}
-                      {prediction.request_details.subject}{" "}
-                      {prediction.request_details.course} at{" "}
-                      {prediction.request_details.campus}
-                    </p>
-                  </div>
+                <Card className="group hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-secondary/50 to-secondary border-none overflow-hidden relative w-full">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
 
-                  <div className="my-6 border-t flex items-center justify-between text-xs text-muted-foreground">
-                    <p>
-                      Generated in{" "}
-                      {(prediction.timing.total_time * 1000).toFixed()}ms
-                    </p>
-                  </div>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="h-auto p-0 text-xs hover:bg-transparent hover:text-primary group"
-                    asChild
-                  >
-                    <Link
-                      href="/how-we-predict-grades"
-                      className="flex items-center gap-1.5"
-                    >
-                      <Info className="h-3.5 w-3.5" />
-                      Learn about the prediction model
-                      <ChevronRight className="group-hover:translate-x-1 transition-transform h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
+                  <CardHeader className="pb-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-2xl font-bold tracking-tight">
+                          Prediction Results
+                        </CardTitle>
+                        <div className="px-3 py-1.5 bg-primary/10 backdrop-blur-sm rounded-full text-xs font-medium text-primary border border-primary/20 shadow-sm text-nowrap">
+                          {prediction.request_details.session}
+                          {prediction.request_details.year}
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-6 mt-4">
+                      {/* Predicted Average */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+                          <TrendingUp className="h-4 w-4 text-emerald-400" />
+                          Predicted Average
+                        </div>
+                        <div className="relative">
+                          <div className="text-3xl font-bold text-emerald-400 text-center">
+                            {prediction.predicted_avg.toFixed(1)}%
+                          </div>
+                          <div className="absolute -top-1 -right-1 h-8 w-8 bg-emerald-500/10 rounded-full blur-lg" />
+                        </div>
+                      </div>
+
+                      {/* Course Details */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+                          <BookOpen className="h-4 w-4 text-blue-500" />
+                          Course Details
+                        </div>
+                        <div className="text-sm text-muted-foreground text-center">
+                          {prediction.request_details.subject}{" "}
+                          {prediction.request_details.course}
+                          <br />
+                          at {prediction.request_details.campus}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Stats */}
+                    <div className="mt-6 pt-4 border-t border-border/50">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Clock className="h-3.5 w-3.5" />
+                          Generated in{" "}
+                          {(prediction.timing.total_time * 1000).toFixed()}ms
+                        </div>
+
+                        <Link
+                          href="/how-we-predict-grades"
+                          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors relative z-10 "
+                        >
+                          <Info className="h-3.5 w-3.5" />
+                          Learn about the model
+                          <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                </Card>
 
                 {historicalData.length == 0 ? (
                   <Alert variant="destructive" className="mt-2">
-                    <AlertTitle>
-                      Error fetching data for{" "}
-                      {prediction.request_details.subject}:{" "}
-                      {prediction.request_details.course}
-                    </AlertTitle>
+                    <AlertTitle>Error rendering chart</AlertTitle>
                     <AlertDescription>
                       This course does not have enough historical data to render
                       a chart.
