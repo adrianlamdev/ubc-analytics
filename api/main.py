@@ -201,18 +201,13 @@ async def log_requests(request, call_next):
 
 
 @app.get("/")
-async def health_check():
+async def health_check() -> Dict:
     """Basic health check endpoint"""
     try:
         get_model()
         get_df()
-        return {"hello": "world"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Health check failed: {str(e)}")
-
-
-@app.get("/health")
-async def health_check() -> Dict:
+        raise HTTPException(status_code=500, detail=f"Health check failed {str(e)}")
     return {
         "status": "healthy",
         "version": "1.0.0",
