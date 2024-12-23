@@ -144,7 +144,7 @@ export default function GpaBoosters() {
       animate={{ opacity: 1 }}
       className="min-h-screen p-4 mt-20"
     >
-      <div className="max-w-3.5xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -502,7 +502,7 @@ export default function GpaBoosters() {
                       <div className="">
                         <ChartContainer
                           config={chartConfig}
-                          className="min-h-[225px] w-[90vw] pr-10"
+                          className="min-h-[30dvh] w-[50dvw] pr-10"
                         >
                           <BarChart data={courses.courses}>
                             <CartesianGrid vertical={false} />

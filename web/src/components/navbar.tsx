@@ -1,8 +1,33 @@
 "use client";
 
+import { useState } from "react";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "./ui/tooltip";
+import * as React from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Menu, LineChart, Book, TrendingUp, Info, Github } from "lucide-react";
+import {
+  Menu,
+  LineChart,
+  Book,
+  TrendingUp,
+  ChevronRight,
+  Info,
+  Github,
+} from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
@@ -10,25 +35,24 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-const navigationItems = [
+const toolsItems = [
   {
-    name: "Grade Predictor",
+    title: "Grade Predictor",
     href: "/grade-predictor",
+    description: "Predict final grades",
     icon: LineChart,
   },
   {
-    name: "GPA Boosters",
+    title: "GPA Boosters",
     href: "/gpa-boosters",
+    description: "Discover GPA boosters",
     icon: TrendingUp,
   },
+];
+
+const navigationItems = [
   {
     name: "API Docs",
     href: "#",
@@ -47,8 +71,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <div className="container mx-auto px-4 py-3">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b m">
+      <div className="container mx-auto px-4 py-3 max-w-6xl">
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -58,39 +82,62 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            {navigationItems.map((item) => (
-              <div key={item.name}>
-                item.comingSoon ? (
-                <TooltipProvider>
-                  <Tooltip key={item.name}>
-                    <TooltipTrigger asChild>
-                      <span className="flex items-center gap-2 text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
-                        <item.icon className="h-4 w-4" />
-                        {item.name}
-                        <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
-                          Coming Soon
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                    {toolsItems.map((tool) => (
+                      <ListItem
+                        key={tool.title}
+                        href={tool.href}
+                        icon={
+                          <tool.icon className="h-6 w-6 text-muted-foreground" />
+                        }
+                        title={tool.title}
+                        description={tool.description}
+                      />
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {navigationItems.map((item) => (
+                <NavigationMenuItem key={item.name}>
+                  {item.comingSoon ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
+                            <item.icon className="h-4 w-4" />
+                            {item.name}
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                              Coming Soon
+                            </span>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Coming Soon</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <Link href={item.href} legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        <span className="flex items-center gap-2">
+                          <item.icon className="h-4 w-4" />
+                          {item.name}
                         </span>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Coming Soon</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                ) : (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
-                </Link>
-                ),
-              </div>
-            ))}
-          </div>
+                      </NavigationMenuLink>
+                    </Link>
+                  )}
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
 
           {/* Mobile Navigation */}
           <Sheet open={open} onOpenChange={setOpen}>
@@ -111,6 +158,29 @@ export default function Navbar() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-1">
+                {/* Tools Section in Mobile Menu */}
+                <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
+                  Tools
+                </div>
+                {toolsItems.map((tool) => (
+                  <Link
+                    key={tool.title}
+                    href={tool.href}
+                    onClick={() => setOpen(false)}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2 font-normal"
+                    >
+                      <tool.icon className="h-4 w-4" />
+                      {tool.title}
+                    </Button>
+                  </Link>
+                ))}
+
+                <div className="mt-4 px-3 py-2 text-sm font-medium text-muted-foreground">
+                  Other
+                </div>
                 {navigationItems.map((item) =>
                   item.comingSoon ? (
                     <Button
@@ -165,3 +235,41 @@ export default function Navbar() {
     </nav>
   );
 }
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a"> & {
+    icon?: React.ReactNode;
+    title: string;
+    description?: string;
+  }
+>(({ className, title, icon, description, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors relative"
+          {...props}
+        >
+          <div className="flex items-center gap-3 group">
+            {icon && (
+              <div className="bg-secondary/50 rounded-md border border-secondary flex items-center justify-center p-1.5 transition-colors group-hover:bg-accent group-hover:border-accent-foreground/20">
+                {icon}
+              </div>
+            )}
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium leading-none">{title}</span>
+              {description && (
+                <span className="line-clamp-2 text-xs leading-snug text-muted-foreground group-hover:text-accent-foreground transition-colors">
+                  {description}
+                </span>
+              )}
+            </div>
+            <ChevronRight className="h-4 w-4 opacity-0 transition-all group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 text-accent-foreground ml-auto" />
+          </div>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
