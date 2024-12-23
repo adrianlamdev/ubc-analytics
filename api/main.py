@@ -107,7 +107,8 @@ def get_df():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info(f"Starting up on port: {os.getenv('PORT')}")
+    port = os.getenv("PORT", "8000")
+    logger.info(f"Starting up on port: {port}")
 
     # Load model and dataframe
     global MODEL, DF
