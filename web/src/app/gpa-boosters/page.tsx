@@ -559,9 +559,7 @@ export default function GpaBoosters() {
                             <YAxis domain={[60, 100]} />
                             <ChartTooltip
                               cursor={false}
-                              content={
-                                <ChartTooltipContent indicator="dashed" />
-                              }
+                              content={<ChartTooltipContent indicator="dot" />}
                             />
                             <ChartLegend content={<ChartLegendContent />} />
                             <Bar
