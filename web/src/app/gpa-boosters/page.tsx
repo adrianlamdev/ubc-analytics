@@ -57,7 +57,7 @@ import {
   Users,
 } from "lucide-react";
 import React, { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { z } from "zod";
 
@@ -72,22 +72,22 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// TODO: Move this to a shared file
+// TODO: Move this to a shared file, change defaults later
 const formSchema = z.object({
-  minEnrollment: z.string().transform((val) => Number.parseInt(val, 10)),
+  minEnrollment: z.number().default(50),
+  // minEnrollment: z.string().transform((val) => Number.parseInt(val, 10)),
   maxYearLevel: z.string(),
   limit: z.string(),
   includeSubjects: z.string().optional(),
   excludeSubjects: z.string().optional(),
-  minHistoricalAvg: z
-    .string()
-    .transform((val) => Number.parseFloat(val))
-    .refine((val) => val <= 100, {
-      message: "Minimum Historical Average cannot exceed 100%",
-    }),
+  minHistoricalAvg: z.number().default(80),
+  // minHistoricalAvg: z
+  //   .string()
+  //   .transform((val) => Number.parseFloat(val))
+  //   .refine((val) => val <= 100, {
+  //     message: "Minimum Historical Average cannot exceed 100%",
+  //   }),
 });
-
-type FormValues = z.infer<typeof formSchema>;
 
 // TODO: Move this to a shared file
 interface Course {
@@ -115,15 +115,24 @@ export default function GpaBoosters() {
   const [error, setError] = useState("");
   const [courses, setCourses] = useState<CourseResponse | null>(null);
 
+  type FormValues = {
+    minEnrollment: number;
+    maxYearLevel: string;
+    limit: string;
+    includeSubjects?: string;
+    excludeSubjects?: string;
+    minHistoricalAvg: number;
+  };
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      minEnrollment: "50",
+      minEnrollment: 50,
       maxYearLevel: "2",
       limit: "10",
       includeSubjects: "",
       excludeSubjects: "",
-      minHistoricalAvg: "80",
+      minHistoricalAvg: 80,
     },
   });
 
@@ -274,8 +283,17 @@ export default function GpaBoosters() {
                               <FormControl>
                                 {field.type === "select" ? (
                                   <Select
-                                    onValueChange={formField.onChange}
-                                    value={formField.value}
+                                    onValueChange={(value) => {
+                                      if (
+                                        field.name === "minEnrollment" ||
+                                        field.name === "minHistoricalAvg"
+                                      ) {
+                                        formField.onChange(Number(value));
+                                      } else {
+                                        formField.onChange(value);
+                                      }
+                                    }}
+                                    value={formField.value.toString()}
                                   >
                                     <SelectTrigger className="bg-background/50 backdrop-blur-sm">
                                       <SelectValue
