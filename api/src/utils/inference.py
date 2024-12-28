@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def prepare_inference_features(
@@ -22,11 +23,9 @@ def prepare_inference_features(
     Raises:
         ValueError: If no historical data is found for the specified course
     """
+    # Input validation
     course_mask = (df["Subject"] == subject) & (df["Course"] == course)
-    course_data = df[course_mask]
-
     time_mask = (df["Year"] < year) | ((df["Year"] == year) & (df["Session"] < session))
-
     filtered_df = df[course_mask & time_mask]
 
     if len(filtered_df) == 0:
@@ -35,6 +34,25 @@ def prepare_inference_features(
         )
 
     latest_data = filtered_df.iloc[-1].to_dict()
+
+    # TODO: for later if UBCO
+    # known_campuses = df["Campus"].unique()
+    # if campus not in known_campuses:
+    #     campus = "UBCV"
+
+    known_sessions = df["Session"].unique()
+    if session not in known_sessions:
+        session = "W"
+
+    if professor:
+        known_professors = df["Professor"].unique()
+        if professor not in known_professors:
+            # If professor is unknown, use aggregated stats or defaults
+            professor = ""
+            latest_data["Prof_Courses_Taught"] = 0
+            for col in df.columns:
+                if col.startswith("Prof_Prev_"):
+                    latest_data[col] = df[col].mean()
 
     features = {
         "Campus": campus,
@@ -53,8 +71,13 @@ def prepare_inference_features(
         "Prof_Courses_Taught": latest_data["Prof_Courses_Taught"],
     }
 
+    # Handle rolling statistics and previous values
     for col in df.columns:
         if col.startswith("Prev_") or col.startswith("Prof_Prev_"):
             features[col] = latest_data[col]
 
-    return pd.DataFrame([features])
+    # Convert to DataFrame and handle any remaining NaN values
+    feature_df = pd.DataFrame([features])
+    feature_df = feature_df.fillna(0)
+
+    return feature_df
