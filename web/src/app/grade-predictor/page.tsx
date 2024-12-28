@@ -374,8 +374,8 @@ export default function GradePredictor() {
                                           No course found.
                                         </CommandEmpty>
                                         <CommandGroup className="overflow-auto">
-                                          // TODO: for now leave course as type
-                                          any, use Course type later
+                                          {/* TODO: for now leave course as type */}
+                                          {/* any, use Course type later */}
                                           {courses?.map((course: any) => (
                                             <CommandItem
                                               key={course.id}
