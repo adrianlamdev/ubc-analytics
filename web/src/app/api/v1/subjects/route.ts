@@ -10,6 +10,7 @@ if (!DATABASE_URL) {
 
 const sql = neon(DATABASE_URL);
 
+// TODO: move to shared schema.ts file
 const SubjectsQuerySchema = z.object({});
 
 export async function GET(req: NextRequest) {

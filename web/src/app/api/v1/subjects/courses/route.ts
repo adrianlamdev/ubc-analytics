@@ -10,6 +10,7 @@ if (!DATABASE_URL) {
 
 const sql = neon(DATABASE_URL!);
 
+// TODO: move to shared schema.ts file
 const CoursesQuerySchema = z.object({
   subject: z.string().min(1, "Subject parameter is required"),
 });

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import logger from "@/utils/logger";
 
+// TODO: move to shared schema.ts file
 const PredictionRequestSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
   course: z.string().min(1, "Course is required"),
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    logger.error({ error }, "Unexpected error in POST /api/predict");
+    logger.error({ error }, "Unexpected error in POST /api/v1/predict");
     return NextResponse.json(
       { error: "An unexpected error occurred. Please try again later." },
       { status: 500 },
