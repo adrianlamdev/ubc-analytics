@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import React from "react";
+import { Banner, BannerDescription, BannerTitle } from "./banner";
+import Navbar from "./navbar";
 
 interface Props {
   children: React.ReactNode;
@@ -34,25 +36,32 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <Alert variant="destructive" className="max-w-md">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Something went wrong</AlertTitle>
-            <AlertDescription className="mt-2">
+        <main className="flex min-h-screen items-center justify-center p-4">
+          <Banner className="max-w-md" variant="error">
+            <BannerTitle>
+              <AlertTriangle />
+              Something went wrong
+            </BannerTitle>
+            <BannerDescription>
               <p className="mb-4">
                 {this.state.error?.message || "An unexpected error occurred"}
               </p>
-              <Button
-                onClick={() => {
-                  this.setState({ hasError: false });
-                  window.location.reload();
-                }}
-              >
-                Try again
-              </Button>
-            </AlertDescription>
-          </Alert>
-        </div>
+              <div className="space-x-2">
+                <Button
+                  onClick={() => {
+                    this.setState({ hasError: false });
+                    window.location.reload();
+                  }}
+                >
+                  Try again
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="mailto:adrian@lams.cc">Report an issue</Link>
+                </Button>
+              </div>
+            </BannerDescription>
+          </Banner>
+        </main>
       );
     }
 

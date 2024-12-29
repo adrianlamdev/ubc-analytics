@@ -1,34 +1,34 @@
 import { AlertTriangle } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import React, { createContext, useContext } from "react";
+import { cn } from "@/lib/utils";
 
 const BannerContext = createContext<"info" | "warning" | "error">("info");
 
 interface BannerProps {
   variant: "info" | "warning" | "error";
+  className?: string;
   children: React.ReactNode;
 }
 
-export function Banner({ variant, children }: BannerProps) {
-  let className = "";
-
+export function Banner({ variant, className, children }: BannerProps) {
+  let variantClasses = "";
   switch (variant) {
     case "info":
-      className = "border-blue-600/30 bg-blue-600/40 shadow";
+      variantClasses = "border-blue-600/30 bg-blue-600/40 shadow";
       break;
     case "error":
-      className = "border-rose-600/30 bg-rose-600/40 shadow";
+      variantClasses = "border-rose-600/30 bg-rose-600/40 shadow";
       break;
     case "warning":
-      className = "border-amber-600/30 bg-amber-600/40 shadow";
+      variantClasses = "border-amber-600/30 bg-amber-600/40 shadow";
       break;
     default:
       break;
   }
-
   return (
     <BannerContext.Provider value={variant}>
-      <Alert className={className}>{children}</Alert>
+      <Alert className={cn(variantClasses, className)}>{children}</Alert>
     </BannerContext.Provider>
   );
 }
