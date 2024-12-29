@@ -44,7 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GpaBoostersQuerySchema, GpaBoostersQuerySchema } from "@/lib/schema";
+import { GpaBoostersQuerySchema } from "@/lib/schema";
 import { Course } from "@/types";
 import { CourseResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
