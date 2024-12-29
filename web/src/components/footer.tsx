@@ -1,13 +1,13 @@
 import { AlertCircle, BookOpen, Github, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
 
 export default function Footer() {
   return (
     <footer className="border-t mt-14">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="space-y-4">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* Header Section */}
+        <div className="space-y-4 max-w-xl">
           <Link
             href="/"
             className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
@@ -19,25 +19,27 @@ export default function Footer() {
             learning. All predictions should be considered as estimates only.
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-8">
+
+        {/* Navigation Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
           <div className="space-y-4">
-            <h4 className="font-medium text-sm">Quick Links</h4>
-            <nav className="flex flex-col space-y-2">
+            <h4 className="font-medium">Quick Links</h4>
+            <nav className="flex flex-col space-y-3">
               <Link
                 href="/grade-predictor"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
               >
                 Grade Predictor
               </Link>
               <Link
                 href="/gpa-boosters"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
               >
                 GPA Boosters
               </Link>
               <Link
                 href="/about"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
               >
                 About
               </Link>
@@ -45,11 +47,11 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-medium text-sm">Resources & Connect</h4>
-            <div className="flex flex-col space-y-2">
+            <h4 className="font-medium">Resources & Connect</h4>
+            <div className="flex flex-col space-y-3">
               <Button
                 variant="link"
-                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start"
+                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
               >
                 <Link
@@ -58,13 +60,13 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Github className="h-4 w-4" />
+                  <Github className="h-4 w-4 group-hover:translate-x-0.5 transform duration-200" />
                   Source Code
                 </Link>
               </Button>
               <Button
                 variant="link"
-                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start"
+                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
               >
                 <Link
@@ -73,20 +75,20 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <BookOpen className="h-4 w-4" />
+                  <BookOpen className="h-4 w-4 group-hover:translate-x-0.5 transform duration-200" />
                   UBC PAIR
                 </Link>
               </Button>
               <Button
                 variant="link"
-                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start"
+                className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
               >
                 <Link
                   href="mailto:adrian@lams.cc"
                   className="flex items-center gap-2"
                 >
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-4 w-4 group-hover:translate-x-0.5 transform duration-200" />
                   Contact
                 </Link>
               </Button>
@@ -95,21 +97,16 @@ export default function Footer() {
         </div>
 
         {/* Disclaimer and Copyright */}
-        <div className="mt-8 pt-4 border-t space-y-4">
-          <div className="flex items-start gap-2 text-xs text-muted-foreground">
-            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-            <p className="leading-relaxed text-muted-foreground">
+        <div className="mt-12 pt-6 border-t space-y-6">
+          <div className="flex items-start gap-3 text-xs text-muted-foreground">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5 text-muted-foreground/70" />
+            <p className="leading-relaxed">
               This educational tool is designed to assist with course planning
               and to be an overall analysis of UBC activity. It should not be
               the sole factor in your decisions. We are not officially
               affiliated with UBC.
             </p>
           </div>
-          {/* <Separator /> */}
-          {/**/}
-          {/* <p className="text-muted-foreground text-center text-xs"> */}
-          {/* 	Built with ♥️ by Adrian Lam */}
-          {/* </p> */}
         </div>
       </div>
     </footer>

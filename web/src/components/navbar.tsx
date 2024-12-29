@@ -73,11 +73,6 @@ const navigationItems = [
     name: "About",
     href: "/about",
   },
-  {
-    name: "",
-    href: "https://github.com/adrianlamdev/ubc-analytics",
-    icon: Github,
-  },
 ];
 
 export default function Navbar() {
@@ -101,7 +96,7 @@ export default function Navbar() {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    <ul className="grid grid-cols-2 gap-3 p-4 min-w-[600px] w-max">
                       {toolsItems.map((tool) => (
                         <ListItem
                           key={tool.title}
@@ -150,7 +145,7 @@ export default function Navbar() {
           <Button
             asChild
             size="icon"
-            className="rounded-full p-1 h-8 w-8"
+            className="rounded-full p-1 h-8 w-8 hidden md:flex"
             variant="secondary"
           >
             <Link
@@ -175,98 +170,131 @@ export default function Navbar() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[300px] sm:w-[400px]">
-              <SheetHeader>
+            <SheetContent className="w-full sm:w-[400px] p-0">
+              <SheetHeader className="p-6 border-b">
                 <SheetTitle className="text-left font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                   UBC Analytics
                 </SheetTitle>
               </SheetHeader>
-              <div className="mt-6 space-y-1">
-                {/* Tools Section in Mobile Menu */}
-                <div className="px-3 py-2 text-sm font-medium text-muted-foreground">
-                  Tools
-                </div>
-                {toolsItems.map((tool) =>
-                  tool.comingSoon ? (
-                    <Button
-                      key={tool.title}
-                      variant="ghost"
-                      className="w-full justify-start gap-2 font-normal opacity-50 cursor-not-allowed"
-                      disabled
-                    >
-                      <tool.icon className="h-4 w-4" />
-                      {tool.title}
-                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full ml-auto">
-                        Coming Soon
-                      </span>
-                    </Button>
-                  ) : (
-                    <Link
-                      key={tool.title}
-                      href={tool.href}
-                      onClick={() => setOpen(false)}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-2 font-normal"
-                      >
-                        <tool.icon className="h-4 w-4" />
-                        {tool.title}
-                      </Button>
-                    </Link>
-                  ),
-                )}
 
-                <div className="mt-4 px-3 py-2 text-sm font-medium text-muted-foreground">
-                  Other
+              {/* Main Content */}
+              <div className="px-4 py-6 space-y-6">
+                {/* Tools Section */}
+                <div className="space-y-2">
+                  <div className="px-2 text-sm font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                    Tools
+                  </div>
+                  <div className="space-y-1">
+                    {toolsItems.map((tool) =>
+                      tool.comingSoon ? (
+                        <Button
+                          key={tool.title}
+                          variant="ghost"
+                          className="w-full justify-start gap-3 font-normal opacity-50 cursor-not-allowed h-auto py-3"
+                          disabled
+                        >
+                          <div className="bg-secondary/50 rounded-md border border-secondary p-1.5">
+                            <tool.icon className="h-4 w-4" />
+                          </div>
+                          <div className="flex flex-col items-start gap-0.5 text-left">
+                            <span>{tool.title}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {tool.description}
+                            </span>
+                          </div>
+                          <span className="text-xs bg-muted px-2 py-0.5 rounded-full ml-auto">
+                            Coming Soon
+                          </span>
+                        </Button>
+                      ) : (
+                        <Link
+                          key={tool.title}
+                          href={tool.href}
+                          onClick={() => setOpen(false)}
+                          className="block"
+                        >
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-3 font-normal h-auto py-3 group"
+                          >
+                            <div className="bg-secondary/50 rounded-md border border-secondary p-1.5 transition-colors group-hover:bg-primary/10 group-hover:border-primary/20">
+                              <tool.icon className="h-4 w-4" />
+                            </div>
+                            <div className="flex flex-col items-start gap-0.5 text-left">
+                              <span>{tool.title}</span>
+                              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                                {tool.description}
+                              </span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 ml-auto opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                          </Button>
+                        </Link>
+                      ),
+                    )}
+                  </div>
                 </div>
-                {navigationItems.map((item) =>
-                  item.comingSoon ? (
-                    <Button
-                      key={item.name}
-                      variant="ghost"
-                      className="w-full justify-start gap-2 font-normal opacity-50 cursor-not-allowed"
-                      disabled
-                    >
-                      {item.icon && <item.icon className="h-4 w-4" />}{" "}
-                      {item.name}
-                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full ml-auto">
-                        Coming Soon
-                      </span>
-                    </Button>
-                  ) : (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start gap-2 font-normal"
-                      >
-                        {item.icon && <item.icon className="h-4 w-4" />}{" "}
-                        {item.name}
-                      </Button>
-                    </Link>
-                  ),
-                )}
+
+                {/* Other Section */}
+                <div className="space-y-2">
+                  <div className="px-2 text-sm font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                    Other
+                  </div>
+                  <div className="space-y-1">
+                    {navigationItems.map((item) =>
+                      item.comingSoon ? (
+                        <Button
+                          key={item.name}
+                          variant="ghost"
+                          className="w-full justify-start gap-3 font-normal opacity-50 cursor-not-allowed h-auto py-3"
+                          disabled
+                        >
+                          {item.icon && <item.icon className="h-4 w-4" />}
+                          <span>{item.name}</span>
+                          <span className="text-xs bg-muted px-2 py-0.5 rounded-full ml-auto">
+                            Coming Soon
+                          </span>
+                        </Button>
+                      ) : (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setOpen(false)}
+                          className="block"
+                        >
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-3 font-normal h-auto py-3 group"
+                          >
+                            {item.icon && <item.icon className="h-4 w-4" />}
+                            <span>{item.name}</span>
+                            <ChevronRight className="h-4 w-4 ml-auto opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                          </Button>
+                        </Link>
+                      ),
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 mt-4"
-                asChild
-              >
-                <Link
-                  href="https://github.com/adrianlamdev/ubc-analytics"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setOpen(false)}
+              {/* Footer */}
+              <div className="mt-auto border-t p-6">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-3 group"
+                  asChild
                 >
-                  <Github className="h-4 w-4" />
-                  GitHub
-                </Link>
-              </Button>
+                  <Link
+                    href="https://github.com/adrianlamdev/ubc-analytics"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                  >
+                    <Github className="h-4 w-4" />
+                    <span>View on GitHub</span>
+                    <ChevronRight className="h-4 w-4 ml-auto opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                  </Link>
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
