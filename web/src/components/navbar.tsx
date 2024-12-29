@@ -87,7 +87,7 @@ export default function Navbar() {
               href="/"
               className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
             >
-              UBC Analytics
+              UBC Metrics
             </Link>
 
             {/* Desktop Navigation */}
@@ -174,7 +174,7 @@ export default function Navbar() {
             <SheetContent className="w-full sm:w-[400px] p-0">
               <SheetHeader className="p-6 border-b">
                 <SheetTitle className="text-left font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  UBC Analytics
+                  UBC Metrics
                 </SheetTitle>
               </SheetHeader>
 

@@ -14,10 +14,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "UBC Analytics",
+  title: "UBC Metrics",
   description:
     "An analytics platform for UBC students and faculty to analyze grades and data using machine learning techniques.",
-  keywords: ["UBC", "analytics", "machine learning", "grades", "data"],
+  keywords: [
+    "UBC",
+    "analytics",
+    "machine learning",
+    "grades",
+    "data",
+    "metrics",
+  ],
   authors: [{ name: "Adrian Lam" }],
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",

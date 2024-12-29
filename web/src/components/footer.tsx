@@ -12,7 +12,7 @@ export default function Footer() {
             href="/"
             className="font-semibold text-xl tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hover:opacity-90 transition-opacity"
           >
-            UBC Analytics
+            UBC Metrics
           </Link>
           <p className="text-sm text-muted-foreground leading-relaxed">
             An experimental project exploring course data analytics and machine
