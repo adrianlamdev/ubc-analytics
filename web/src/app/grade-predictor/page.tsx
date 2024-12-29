@@ -71,6 +71,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import useSWR from "swr";
 import { z } from "zod";
 import { Course, Subject } from "@/types";
+import { Banner, BannerDescription, BannerTitle } from "@/components/banner";
 
 // TODO: Move these to a separate file
 const PREDICTION_RANGE = {
@@ -440,16 +441,13 @@ export default function GradePredictor() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.6 }}
                   >
-                    <Alert className="border-amber-600/30 bg-amber-600/40 shadow">
-                      <AlertTitle className="text-amber-500 flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
-                        Important
-                      </AlertTitle>
-                      <AlertDescription className="text-sm mt-1.5">
+                    <Banner variant="warning">
+                      <BannerTitle>Important</BannerTitle>
+                      <BannerDescription>
                         Results should be taken as rough estimates only and may
                         not accurately reflect future performance.
-                      </AlertDescription>
-                    </Alert>
+                      </BannerDescription>
+                    </Banner>
                   </motion.div>
 
                   <motion.div
@@ -565,13 +563,13 @@ export default function GradePredictor() {
                   </Card>
 
                   {historicalData.length === 0 ? (
-                    <Alert variant="destructive" className="mt-2">
-                      <AlertTitle>Error rendering chart</AlertTitle>
-                      <AlertDescription>
+                    <Banner variant="error">
+                      <BannerTitle>No Historical Data</BannerTitle>
+                      <BannerDescription>
                         This course does not have enough historical data to
                         render a chart.
-                      </AlertDescription>
-                    </Alert>
+                      </BannerDescription>
+                    </Banner>
                   ) : (
                     <div className="flex justify-center">
                       <ChartContainer

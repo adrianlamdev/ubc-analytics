@@ -1,5 +1,6 @@
 "use client";
 
+import { Banner, BannerTitle, BannerDescription } from "@/components/banner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -570,16 +571,13 @@ export default function GpaBoosters() {
                         </div>
                       </div>
                     ) : (
-                      <Alert className="border-amber-600/30 bg-amber-600/40 shadow mt-6">
-                        <AlertTitle className="text-amber-500 flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
-                          Chart Not Displayed
-                        </AlertTitle>
-                        <AlertDescription className="text-sm mt-1.5">
+                      <Banner variant="warning">
+                        <BannerTitle>Chart Not Displayed</BannerTitle>
+                        <BannerDescription>
                           Chart is only available for 10 or fewer courses.
                           Please reduce the number of results to view the chart.
-                        </AlertDescription>
-                      </Alert>
+                        </BannerDescription>
+                      </Banner>
                     )}
                   </div>
                 </div>
