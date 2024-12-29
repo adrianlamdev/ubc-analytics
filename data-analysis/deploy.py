@@ -1,3 +1,5 @@
+# TODO: remove this file since HF is not used
+
 import sklearn
 from sklearn.tree import DecisionTreeClassifier
 from skops import hub_utils, card
@@ -10,13 +12,13 @@ df = pd.read_csv("data/processed/ubcv_grades_processed_tableau_all.csv")
 
 # Load example input
 example_input = prepare_inference_features(
-            df=df,
-            subject = 'CPSC',
-            course = 110,
-            year = 2018,
-            campus = 'UBCV',
-            session= 'W',
-            professor = ''
+    df=df,
+    subject="CPSC",
+    course=110,
+    year=2018,
+    campus="UBCV",
+    session="W",
+    professor="",
 )
 model = load("models/ubcv_grade_predictor_ridge.joblib")
 
@@ -45,3 +47,4 @@ hub_utils.push(
     commit_message="Initial commit",
     create_remote=True,
 )
+
