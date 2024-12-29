@@ -1,14 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import logger from "@/utils/logger";
 import { PredictionRequestSchema } from "@/lib/schema";
+import { validateEnv } from "@/utils/env";
+import { APIError } from "@/lib/api-error";
+
+validateEnv();
 
 export async function POST(req: NextRequest) {
-  try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;
-    if (!API_URL) {
-      throw new Error("NEXT_PUBLIC_API_URL environment variable is not set");
-    }
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+  try {
     const body = await req.json();
     const validationResult = PredictionRequestSchema.safeParse(body);
 
@@ -17,18 +18,17 @@ export async function POST(req: NextRequest) {
         { error: validationResult.error, body },
         "Invalid request body",
       );
-      return NextResponse.json(
-        {
-          error: "Invalid request body",
-          details: validationResult.error.errors,
-        },
-        { status: 400 },
+      throw new APIError(
+        400,
+        "Invalid request body",
+        "VALIDATION_ERROR",
+        validationResult.error.errors,
       );
     }
 
     const { subject, course, year } = validationResult.data;
 
-    const response = await fetch(`${API_URL}/api/v1/predict`, {
+    const response = await fetch(`${apiUrl}/api/v1/predict`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,21 +39,37 @@ export async function POST(req: NextRequest) {
     if (!response.ok) {
       const error = await response.json();
       logger.error({ error }, "Prediction API request failed");
-      return NextResponse.json(
-        { error: "Failed to fetch prediction" },
-        { status: response.status },
+
+      const statusCode = response.status === 404 ? 404 : 502;
+      throw new APIError(
+        statusCode,
+        "Failed to fetch prediction",
+        "PREDICTION_API_ERROR",
+        error.details,
       );
     }
 
     const data = await response.json();
     logger.info({ data }, "Successfully fetched prediction");
-
     return NextResponse.json(data);
   } catch (error) {
+    if (error instanceof APIError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          code: error.code,
+          ...(error.statusCode === 400 ? { details: error.details } : {}),
+        },
+        { status: error.statusCode },
+      );
+    }
+
     logger.error({ error }, "Unexpected error in POST /api/v1/predict");
-    return NextResponse.json(
-      { error: "An unexpected error occurred. Please try again later." },
-      { status: 500 },
+
+    throw new APIError(
+      500,
+      "An unexpected error occurred. Please try again later.",
+      "INTERNAL_SERVER_ERROR",
     );
   }
 }

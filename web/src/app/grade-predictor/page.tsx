@@ -60,7 +60,7 @@ import {
   ChevronsUpDown,
   Clock,
   Info,
-  Loader,
+  Loader2,
   Notebook,
   TrendingUp,
 } from "lucide-react";
@@ -73,6 +73,7 @@ import { z } from "zod";
 import { Course, Subject } from "@/types";
 import { Banner, BannerDescription, BannerTitle } from "@/components/banner";
 import { PredictionRequestSchema } from "@/lib/schema";
+import { PredictionResponse } from "@/types/api";
 
 // TODO: Move these to a separate file
 const PREDICTION_RANGE = {
@@ -119,27 +120,6 @@ const chartConfig = {
 
 type FormValues = z.infer<typeof formSchema>;
 
-// TODO: move this to a separate file
-interface PredictionResponse {
-  predicted_avg: number;
-  request_details: {
-    subject: string;
-    course: string;
-    campus: string;
-    year: string;
-    session: string;
-  };
-  historical_data: {
-    year: string;
-    average: number;
-    predicted_avg: number;
-    historical_predicted: number;
-  }[];
-  timing: {
-    total_time: number;
-  };
-}
-
 export default function GradePredictor() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -148,10 +128,15 @@ export default function GradePredictor() {
   const [openCourse, setOpenCourse] = useState(false);
   const [historicalData, setHistoricalData] = useState([]);
 
-  const { data: subjects, error: subjectsError } = useSWR(
-    "/api/v1/subjects",
-    fetcher,
-  );
+  const {
+    data: subjects,
+    error: subjectsError,
+    isLoading: isLoadingSubjects,
+  } = useSWR("/api/v1/subjects", fetcher, {
+    revalidateOnFocus: false,
+    retry: 3,
+    dedupingInterval: 60000,
+  });
 
   const form = useForm({
     resolver: zodResolver(PredictionRequestSchema),
@@ -160,10 +145,10 @@ export default function GradePredictor() {
       course: "",
       year: "",
     },
+    mode: "onChange",
   });
 
   const selectedSubject = form.watch("subject");
-  // TODO: handle errors fetching courses
   const { data: courses, error: coursesError } = useSWR(
     selectedSubject
       ? `/api/v1/subjects/courses?subject=${selectedSubject}`
@@ -171,7 +156,19 @@ export default function GradePredictor() {
     fetcher,
   );
 
+  if (coursesError) {
+    return (
+      <Banner variant="error">
+        <BannerTitle>Error</BannerTitle>
+        <BannerDescription>
+          Failed to load courses. Please try again.
+        </BannerDescription>
+      </Banner>
+    );
+  }
+
   const onSubmit = async (values: FormValues) => {
+    // TODO: add analytics tracking
     setError("");
     setPrediction(null);
     setIsLoading(true);
@@ -183,13 +180,20 @@ export default function GradePredictor() {
         body: JSON.stringify(values),
       });
 
-      if (!response.ok) throw new Error("Failed to get prediction");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get prediction");
+      }
 
       const data = await response.json();
       setPrediction(data);
       setHistoricalData(data.historical_data);
     } catch (err) {
-      setError("Failed to get prediction. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to get prediction. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -197,11 +201,12 @@ export default function GradePredictor() {
 
   if (subjectsError) {
     return (
-      <Alert variant="destructive">
-        <AlertDescription>
+      <Banner variant="error">
+        <BannerTitle>Error</BannerTitle>
+        <BannerDescription>
           Failed to load subjects. Please refresh the page.
-        </AlertDescription>
-      </Alert>
+        </BannerDescription>
+      </Banner>
     );
   }
 
@@ -463,7 +468,7 @@ export default function GradePredictor() {
                     >
                       {isLoading ? (
                         <>
-                          <Loader className="mr-2 h-3.5 w-3.5 animate-spin" />
+                          <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                           <span>Predicting...</span>
                         </>
                       ) : (
@@ -476,14 +481,12 @@ export default function GradePredictor() {
             </CardContent>
 
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Alert variant="destructive" className="mt-4 mx-6">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              </motion.div>
+              <Alert variant="destructive" className="mt-4 mx-6">
+                <AlertDescription>{error}</AlertDescription>
+                <Button onClick={() => form.handleSubmit(onSubmit)()}>
+                  Try Again
+                </Button>
+              </Alert>
             )}
 
             {prediction && (
@@ -563,6 +566,7 @@ export default function GradePredictor() {
                     <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                   </Card>
 
+                  {/* Grade Chart */}
                   {historicalData.length === 0 ? (
                     <Banner variant="error">
                       <BannerTitle>No Historical Data</BannerTitle>
@@ -572,50 +576,7 @@ export default function GradePredictor() {
                       </BannerDescription>
                     </Banner>
                   ) : (
-                    <div className="flex justify-center">
-                      <ChartContainer
-                        config={chartConfig}
-                        className="min-h-[250px] w-[90vw] mr-10 mt-10"
-                      >
-                        <AreaChart accessibilityLayer data={historicalData}>
-                          <CartesianGrid vertical={false} />
-                          <XAxis
-                            dataKey="year"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => value.split("-")[0]}
-                          />
-                          <YAxis />
-                          <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent indicator="dot" />}
-                          />
-                          <ChartLegend content={<ChartLegendContent />} />
-                          <Area
-                            dataKey="average"
-                            type="natural"
-                            fill="var(--color-historical)"
-                            stroke="var(--color-historical)"
-                            name={chartConfig.historical.label}
-                          />
-                          <Area
-                            dataKey="predicted_avg"
-                            type="natural"
-                            fill="var(--color-predicted)"
-                            stroke="var(--color-predicted)"
-                            name={chartConfig.predicted.label}
-                          />
-                          <Area
-                            dataKey="historical_predicted"
-                            type="natural"
-                            fill="var(--color-historical-predicted)"
-                            stroke="var(--color-historical-predicted)"
-                            name={chartConfig.historical_predicted.label}
-                          />
-                        </AreaChart>
-                      </ChartContainer>
-                    </div>
+                    <GradeChart data={historicalData} />
                   )}
                 </CardFooter>
               </>
@@ -624,5 +585,55 @@ export default function GradePredictor() {
         </motion.div>
       </div>
     </main>
+  );
+}
+
+function GradeChart({ data }: { data: any }) {
+  return (
+    <div className="flex justify-center">
+      <ChartContainer
+        config={chartConfig}
+        className="min-h-[250px] w-full max-w-[90vw] mr-10 mt-10"
+        aria-label="Historical grade data chart"
+      >
+        <AreaChart accessibilityLayer data={data}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="year"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            tickFormatter={(value) => value.split("-")[0]}
+          />
+          <YAxis />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="dot" />}
+          />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Area
+            dataKey="average"
+            type="natural"
+            fill="var(--color-historical)"
+            stroke="var(--color-historical)"
+            name={chartConfig.historical.label}
+          />
+          <Area
+            dataKey="predicted_avg"
+            type="natural"
+            fill="var(--color-predicted)"
+            stroke="var(--color-predicted)"
+            name={chartConfig.predicted.label}
+          />
+          <Area
+            dataKey="historical_predicted"
+            type="natural"
+            fill="var(--color-historical-predicted)"
+            stroke="var(--color-historical-predicted)"
+            name={chartConfig.historical_predicted.label}
+          />
+        </AreaChart>
+      </ChartContainer>
+    </div>
   );
 }

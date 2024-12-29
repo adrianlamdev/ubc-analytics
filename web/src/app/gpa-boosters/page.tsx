@@ -44,8 +44,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GpaBoostersQuerySchema } from "@/lib/schema";
+import { GpaBoostersQuerySchema, GpaBoostersQuerySchema } from "@/lib/schema";
 import { Course } from "@/types";
+import { CourseResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
@@ -75,17 +76,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// TODO: Move this to a shared file
-interface CourseResponse {
-  courses: Course[];
-  timing: {
-    total_time: number;
-  };
-  metadata: {
-    total_courses_considered: number;
-  };
-}
-
 export default function GpaBoosters() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -111,6 +101,7 @@ export default function GpaBoosters() {
   };
 
   const onSubmit = async (values: FormValues) => {
+    // TODO: probably add analytics here
     setError("");
     setCourses(null);
     setIsLoading(true);
@@ -135,14 +126,6 @@ export default function GpaBoosters() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleNumberFieldChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: any,
-  ) => {
-    const value = e.target.value === "" ? "" : Number(e.target.value);
-    field.onChange(value);
   };
 
   return (
@@ -348,15 +331,21 @@ export default function GpaBoosters() {
 
             {/* Error Message */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Banner variant="error">
-                  <BannerTitle>Failed to fetch</BannerTitle>
-                  <BannerDescription>{error}</BannerDescription>
-                </Banner>
-              </motion.div>
+              <Banner variant="error">
+                <BannerTitle>Failed to fetch</BannerTitle>
+                <BannerDescription>
+                  {error}
+                  <Button
+                    onClick={() => {
+                      setError("");
+                      form.handleSubmit(onSubmit)();
+                    }}
+                    className="mt-2"
+                  >
+                    Try Again
+                  </Button>
+                </BannerDescription>
+              </Banner>
             )}
 
             {/* Loading State */}
@@ -390,8 +379,15 @@ export default function GpaBoosters() {
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                       >
                         <Card
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              handleCourseClick(course);
+                            }
+                          }}
                           className="group hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-secondary/50 to-secondary border-none overflow-hidden relative cursor-pointer"
-                          onClick={() => handleCourseClick(course)}
+                          aria-label={`${course.subject} ${course.course_number}: ${course.title}`}
                         >
                           {/* Decorative background element */}
                           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-70 transition-opacity duration-300" />
@@ -517,7 +513,7 @@ export default function GpaBoosters() {
                       <div className="">
                         <ChartContainer
                           config={chartConfig}
-                          className="min-h-[30dvh] w-[50dvw] pr-10"
+                          className="min-h-[30dvh] w-full md:w-[50dvw] pr-4 md:pr-10"
                         >
                           <BarChart data={courses.courses}>
                             <CartesianGrid vertical={false} />

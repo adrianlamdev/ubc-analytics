@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { Calculator, LineChart } from "lucide-react";
 import Link from "next/link";
 
-// TODO: consider movign this to a separate file
+// TODO: consider moving this to a separate file
 const FEATURES = [
   {
     icon: Calculator,
