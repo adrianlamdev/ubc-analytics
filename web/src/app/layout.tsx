@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Inter } from "next/font/google";
 import { ErrorBoundary } from "@/components/error-boundary";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Script
+        defer
+        src="https://cloud.umami.is/script.js"
+        data-website-id="8f2c2223-1c02-4397-ab99-0da414016f35"
+      />
       <body
         className={cn(
           inter.variable,

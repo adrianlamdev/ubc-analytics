@@ -307,7 +307,7 @@ export default function GradePredictor() {
                                         <ChevronsUpDown className="h-4 w-4 opacity-50" />
                                       </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="p-0">
+                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                                       <Command className="max-h-[300px]">
                                         <CommandInput placeholder="Search subjects..." />
                                         <CommandEmpty>
@@ -318,6 +318,10 @@ export default function GradePredictor() {
                                             <CommandItem
                                               key={subject.id}
                                               value={subject.subject_code}
+                                              data-umami-event="select_subject"
+                                              data-umami-event-subject={
+                                                subject.subject_code
+                                              }
                                               onSelect={(value) => {
                                                 form.setValue("subject", value);
                                                 form.setValue("course", "");
@@ -373,7 +377,7 @@ export default function GradePredictor() {
                                         <ChevronsUpDown className="h-4 w-4 opacity-50" />
                                       </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="p-0">
+                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                                       <Command className="max-h-[300px]">
                                         <CommandInput placeholder="Search courses..." />
                                         <CommandEmpty>
@@ -384,6 +388,13 @@ export default function GradePredictor() {
                                             <CommandItem
                                               key={`${course.subject}${course.course_number}`}
                                               value={course.course_number}
+                                              data-umami-event="select_course"
+                                              data-umami-event-course={
+                                                course.course_number
+                                              }
+                                              data-umami-event-subject={
+                                                selectedSubject
+                                              }
                                               onSelect={(value) => {
                                                 form.setValue("course", value);
                                                 setOpenCourse(false);
@@ -423,6 +434,7 @@ export default function GradePredictor() {
                                         <SelectItem
                                           key={option.value}
                                           value={option.value}
+                                          data-umami-event="select_year"
                                         >
                                           {option.label}
                                         </SelectItem>
@@ -465,6 +477,10 @@ export default function GradePredictor() {
                       type="submit"
                       className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                       disabled={isLoading || !form.formState.isValid}
+                      data-umami-event="submit_prediction"
+                      data-umami-event-subject={form.watch("subject")}
+                      data-umami-event-course={form.watch("course")}
+                      data-umami-event-year={form.watch("year")}
                     >
                       {isLoading ? (
                         <>
@@ -483,7 +499,10 @@ export default function GradePredictor() {
             {error && (
               <Alert variant="destructive" className="mt-4 mx-6">
                 <AlertDescription>{error}</AlertDescription>
-                <Button onClick={() => form.handleSubmit(onSubmit)()}>
+                <Button
+                  onClick={() => form.handleSubmit(onSubmit)()}
+                  data-umami-event="prediction_retry"
+                >
                   Try Again
                 </Button>
               </Alert>
@@ -554,6 +573,7 @@ export default function GradePredictor() {
                           <Link
                             href="/how-we-predict-grades"
                             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors relative z-10"
+                            data-umami-event="view_prediction_info"
                           >
                             <Info className="h-3.5 w-3.5" />
                             Learn about the model

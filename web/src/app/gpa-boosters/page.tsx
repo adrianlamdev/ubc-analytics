@@ -261,6 +261,9 @@ export default function GpaBoosters() {
                                         <SelectItem
                                           key={option.value}
                                           value={option.value}
+                                          data-umami-event="gpa_boosters_select"
+                                          data-umami-event-field={field.name}
+                                          data-umami-event-value={option.value}
                                         >
                                           {option.label}
                                         </SelectItem>
@@ -273,6 +276,8 @@ export default function GpaBoosters() {
                                     placeholder={field.placeholder}
                                     {...formField}
                                     className="bg-background/50 backdrop-blur-sm"
+                                    data-umami-event="gpa_boosters_input"
+                                    data-umami-event-field={field.name}
                                   />
                                 )}
                               </FormControl>
@@ -314,6 +319,13 @@ export default function GpaBoosters() {
                       type="submit"
                       className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                       disabled={isLoading || !form.formState.isValid}
+                      data-umami-event="find_gpa_boosters"
+                      data-umami-event-min-enrollment={form.watch(
+                        "minEnrollment",
+                      )}
+                      data-umami-event-max-year={form.watch("maxYearLevel")}
+                      data-umami-event-limit={form.watch("limit")}
+                      data-umami-event-min-avg={form.watch("minHistoricalAvg")}
                     >
                       {isLoading ? (
                         <>
@@ -341,6 +353,7 @@ export default function GpaBoosters() {
                       form.handleSubmit(onSubmit)();
                     }}
                     className="mt-2"
+                    data-umami-event="gpa_boosters_retry"
                   >
                     Try Again
                   </Button>
@@ -388,6 +401,9 @@ export default function GpaBoosters() {
                           }}
                           className="group hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-secondary/50 to-secondary border-none overflow-hidden relative cursor-pointer"
                           aria-label={`${course.subject} ${course.course_number}: ${course.title}`}
+                          data-umami-event="view_course_details"
+                          data-umami-event-course={`${course.subject} ${course.course_number}`}
+                          data-umami-event-rank={index + 1}
                         >
                           {/* Decorative background element */}
                           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 group-hover:opacity-70 transition-opacity duration-300" />

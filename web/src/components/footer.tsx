@@ -28,18 +28,24 @@ export default function Footer() {
               <Link
                 href="/grade-predictor"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="grade-predictor"
               >
                 Grade Predictor
               </Link>
               <Link
                 href="/gpa-boosters"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="gpa-boosters"
               >
                 GPA Boosters
               </Link>
               <Link
                 href="/about"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors hover:translate-x-0.5 transform duration-200"
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="about"
               >
                 About
               </Link>
@@ -53,6 +59,8 @@ export default function Footer() {
                 variant="link"
                 className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="github"
               >
                 <Link
                   href="https://github.com/adrianlamdev/ubc-analytics"
@@ -68,6 +76,8 @@ export default function Footer() {
                 variant="link"
                 className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="ubc_pair"
               >
                 <Link
                   href="https://pair.ubc.ca/"
@@ -83,6 +93,8 @@ export default function Footer() {
                 variant="link"
                 className="h-auto p-0 text-sm text-muted-foreground hover:text-primary justify-start group"
                 asChild
+                data-umami-event="footer_navigation"
+                data-umami-event-destination="contact"
               >
                 <Link
                   href="mailto:adrian@lams.cc"

@@ -108,6 +108,8 @@ export default function Navbar() {
                           description={tool.description}
                           disabled={tool.disabled}
                           comingSoon={tool.comingSoon}
+                          data-umami-event="nav_tool_select"
+                          data-umami-event-tool={tool.title}
                         />
                       ))}
                     </ul>
@@ -120,7 +122,6 @@ export default function Navbar() {
                     <NavigationMenuItem key={item.name} className="flex">
                       {item.comingSoon ? (
                         <span className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground/50 cursor-default">
-                          {item.icon && <item.icon className="h-4 w-4" />}
                           {item.name}
                           <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
                             Coming Soon
@@ -130,7 +131,6 @@ export default function Navbar() {
                         <Link href={item.href} legacyBehavior passHref>
                           <NavigationMenuLink className="px-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                             <span className="flex items-center gap-2">
-                              {item.icon && <item.icon className="h-4 w-4" />}
                               {item.name}
                             </span>
                           </NavigationMenuLink>
@@ -153,6 +153,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              data-umami-event="nav_github_click"
             >
               <Github className="h-4 w-4" />
             </Link>
@@ -212,6 +213,8 @@ export default function Navbar() {
                           href={tool.href}
                           onClick={() => setOpen(false)}
                           className="block"
+                          data-umami-event="mobile_nav_select"
+                          data-umami-event-destination={tool.title}
                         >
                           <Button
                             variant="ghost"
@@ -248,7 +251,6 @@ export default function Navbar() {
                           className="w-full justify-start gap-3 font-normal opacity-50 cursor-not-allowed h-auto py-3"
                           disabled
                         >
-                          {item.icon && <item.icon className="h-4 w-4" />}
                           <span>{item.name}</span>
                           <span className="text-xs bg-muted px-2 py-0.5 rounded-full ml-auto">
                             Coming Soon
@@ -265,7 +267,6 @@ export default function Navbar() {
                             variant="ghost"
                             className="w-full justify-start gap-3 font-normal h-auto py-3 group"
                           >
-                            {item.icon && <item.icon className="h-4 w-4" />}
                             <span>{item.name}</span>
                             <ChevronRight className="h-4 w-4 ml-auto opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
                           </Button>
@@ -288,6 +289,7 @@ export default function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setOpen(false)}
+                    data-umami-event="nav_github_click"
                   >
                     <Github className="h-4 w-4" />
                     <span>View on GitHub</span>

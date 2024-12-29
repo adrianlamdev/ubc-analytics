@@ -98,10 +98,21 @@ function Hero() {
           className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
           asChild
           aria-label="Try it Now"
+          data-umami-event="hero_button_click"
+          data-umami-event-type="try_now"
+          data-umami-event-location="hero"
         >
           <Link href="/grade-predictor">Try it Now</Link>
         </Button>
-        <Button size="lg" variant="outline" asChild aria-label="Learn More">
+        <Button
+          size="lg"
+          variant="outline"
+          asChild
+          aria-label="Learn More"
+          data-umami-event="hero_button_click"
+          data-umami-event-type="learn_more"
+          data-umami-event-location="hero"
+        >
           <Link href="/about">Learn More</Link>
         </Button>
       </div>
@@ -141,7 +152,12 @@ function FAQ() {
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
             {QUESTIONS.map((faq, index) => (
-              <AccordionItem key={`item-${index}`} value={`item-${index}`}>
+              <AccordionItem
+                key={`item-${index}`}
+                value={`item-${index}`}
+                data-umami-event="faq_interaction"
+                data-umami-event-question={faq.question}
+              >
                 <AccordionTrigger className="text-left">
                   {faq.question}
                 </AccordionTrigger>
