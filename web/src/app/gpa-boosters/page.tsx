@@ -43,6 +43,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Course } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import {
@@ -90,16 +91,6 @@ const formSchema = z.object({
 });
 
 // TODO: Move this to a shared file
-interface Course {
-  subject: string;
-  course: string;
-  title: string;
-  predicted_avg: number;
-  historical_avg: number;
-  total_enrollment: number;
-  year_level: number;
-}
-
 interface CourseResponse {
   courses: Course[];
   timing: {
@@ -169,12 +160,8 @@ export default function GpaBoosters() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen p-4 mt-20"
-    >
-      <div className="max-w-4xl mx-auto space-y-6">
+    <main className="min-h-screen p-4 mt-20">
+      <div className="max-w-2xl mx-auto space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -410,7 +397,7 @@ export default function GpaBoosters() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {courses.courses.map((course, index) => (
                       <motion.div
-                        key={`${course.subject}${course.course}`}
+                        key={`${course.subject}${course.course_number}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -433,7 +420,7 @@ export default function GpaBoosters() {
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
                                 <CardTitle className="text-2xl font-bold tracking-tight">
-                                  {course.subject} {course.course}
+                                  {course.subject} {course.course_number}
                                 </CardTitle>
                               </div>
                               <CardDescription className="text-sm">
@@ -601,6 +588,6 @@ export default function GpaBoosters() {
           </Card>
         </motion.div>
       </div>
-    </motion.div>
+    </main>
   );
 }

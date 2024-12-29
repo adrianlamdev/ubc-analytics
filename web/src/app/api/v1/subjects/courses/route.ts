@@ -1,23 +1,44 @@
 import logger from "@/utils/logger";
 import { neon } from "@neondatabase/serverless";
 import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
-const sql = neon(process.env.DATABASE_URL!);
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is not set");
+}
+
+const sql = neon(DATABASE_URL!);
+
+const CoursesQuerySchema = z.object({
+  subject: z.string().min(1, "Subject parameter is required"),
+});
 
 export async function GET(req: NextRequest) {
-	try {
-		const searchParams = req.nextUrl.searchParams;
-		const subject = searchParams.get("subject");
+  try {
+    const searchParams = req.nextUrl.searchParams;
+    const query = {
+      subject: searchParams.get("subject"),
+    };
+    const validationResult = CoursesQuerySchema.safeParse(query);
 
-		if (!subject) {
-			logger.error("Subject parameter is required");
-			return NextResponse.json(
-				{ error: "Subject parameter is required" },
-				{ status: 400 },
-			);
-		}
+    if (!validationResult.success) {
+      logger.error(
+        { error: validationResult.error, query },
+        "Invalid query parameters",
+      );
+      return NextResponse.json(
+        {
+          error: "Invalid query parameters",
+          details: validationResult.error.errors,
+        },
+        { status: 400 },
+      );
+    }
 
-		const courses = await sql`
+    const { subject } = validationResult.data;
+
+    const courses = await sql`
       SELECT c.id, c.course_number, c.title
       FROM courses c
       JOIN subjects s ON c.subject_id = s.id
@@ -25,13 +46,17 @@ export async function GET(req: NextRequest) {
       ORDER BY c.course_number ASC
     `;
 
-		logger.info({ courses }, "Successfully fetched courses");
-		return NextResponse.json(courses);
-	} catch (error) {
-		logger.error({ error }, "Database query failed");
-		return NextResponse.json(
-			{ error: "Failed to fetch courses" },
-			{ status: 500 },
-		);
-	}
+    logger.info({ courses, subject }, "Successfully fetched courses");
+
+    return NextResponse.json(courses);
+  } catch (error) {
+    logger.error(
+      { error, message: "Database query failed" },
+      "Failed to fetch courses",
+    );
+    return NextResponse.json(
+      { error: "Failed to fetch courses. Please try again later." },
+      { status: 500 },
+    );
+  }
 }

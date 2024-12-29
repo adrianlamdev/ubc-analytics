@@ -70,6 +70,7 @@ import { useForm } from "react-hook-form";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import useSWR from "swr";
 import { z } from "zod";
+import { Course, Subject } from "@/types";
 
 // TODO: Move these to a separate file
 const PREDICTION_RANGE = {
@@ -116,12 +117,8 @@ const chartConfig = {
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface Subject {
-  id: number;
-  subject_code: string;
-}
-
-interface PredictionData {
+// TODO: move this to a separate file
+interface PredictionResponse {
   predicted_avg: number;
   request_details: {
     subject: string;
@@ -144,7 +141,7 @@ interface PredictionData {
 export default function GradePredictor() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [prediction, setPrediction] = useState<PredictionData | null>(null);
+  const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
   const [openSubject, setOpenSubject] = useState(false);
   const [openCourse, setOpenCourse] = useState(false);
   const [historicalData, setHistoricalData] = useState([]);
@@ -164,6 +161,7 @@ export default function GradePredictor() {
   });
 
   const selectedSubject = form.watch("subject");
+  // TODO: handle errors fetching courses
   const { data: courses, error: coursesError } = useSWR(
     selectedSubject
       ? `/api/v1/subjects/courses?subject=${selectedSubject}`
@@ -206,11 +204,7 @@ export default function GradePredictor() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen p-4 mt-20"
-    >
+    <main className="min-h-screen p-4 mt-20">
       <div className="max-w-2xl mx-auto space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -354,11 +348,16 @@ export default function GradePredictor() {
                                       >
                                         {formField.value
                                           ? courses?.find(
-                                              // TODO: for now leave course as type any, use Course type later
-                                              (course: any) =>
+                                              (course: Course) =>
                                                 course.course_number ===
                                                 formField.value,
-                                            )?.course_number
+                                            )?.course_number + // Course number
+                                            " - " + // Separator
+                                            courses?.find(
+                                              (course: Course) =>
+                                                course.course_number ===
+                                                formField.value,
+                                            )?.title // Course title
                                           : !selectedSubject
                                             ? "Select a subject first"
                                             : !courses
@@ -374,11 +373,9 @@ export default function GradePredictor() {
                                           No course found.
                                         </CommandEmpty>
                                         <CommandGroup className="overflow-auto">
-                                          {/* TODO: for now leave course as type */}
-                                          {/* any, use Course type later */}
-                                          {courses?.map((course: any) => (
+                                          {courses?.map((course: Course) => (
                                             <CommandItem
-                                              key={course.id}
+                                              key={`${course.subject}${course.course_number}`}
                                               value={course.course_number}
                                               onSelect={(value) => {
                                                 form.setValue("course", value);
@@ -548,7 +545,8 @@ export default function GradePredictor() {
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <Clock className="h-3.5 w-3.5" />
                             Generated in{" "}
-                            {(prediction.timing.total_time * 1000).toFixed()}ms
+                            {(prediction.timing.total_time * 1000).toFixed()}
+                            ms
                           </div>
 
                           <Link
@@ -626,6 +624,6 @@ export default function GradePredictor() {
           </Card>
         </motion.div>
       </div>
-    </motion.div>
+    </main>
   );
 }
