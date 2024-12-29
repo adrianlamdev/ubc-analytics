@@ -1,7 +1,7 @@
 import logger from "@/utils/logger";
 import { neon } from "@neondatabase/serverless";
 import { type NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { SubjectsQuerySchema } from "@/lib/schema";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
@@ -9,9 +9,6 @@ if (!DATABASE_URL) {
 }
 
 const sql = neon(DATABASE_URL);
-
-// TODO: move to shared schema.ts file
-const SubjectsQuerySchema = z.object({});
 
 export async function GET(req: NextRequest) {
   try {

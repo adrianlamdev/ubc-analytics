@@ -1,43 +1,35 @@
+import { GpaBoostersQuerySchema } from "@/lib/schema";
 import logger from "@/utils/logger";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-// TODO: move to shared schema.ts file
-const querySchema = z.object({
-  limit: z.string().transform(Number),
-  min_enrollment: z.string().transform(Number),
-  max_year_level: z.string().transform(Number),
-  include_subjects: z.string().optional(),
-  exclude_subjects: z.string().optional(),
-  min_historical_avg: z
-    .string()
-    .transform((val) => Number.parseFloat(val))
-    .optional(),
-});
-
 export async function GET(req: NextRequest) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!API_URL) {
+      throw new Error("NEXT_PUBLIC_API_URL environment variable is not set");
+    }
+
     const { searchParams } = new URL(req.url);
 
-    const validatedParams = querySchema.parse({
+    const validatedParams = GpaBoostersQuerySchema.parse({
       limit: searchParams.get("limit") || "10",
-      min_enrollment: searchParams.get("min_enrollment") || "50",
-      max_year_level: searchParams.get("max_year_level") || "2",
-      include_subjects: searchParams.get("include_subjects") || "",
-      exclude_subjects: searchParams.get("exclude_subjects") || "",
-      min_historical_avg: searchParams.get("min_historical_avg") || "80",
+      minEnrollment: Number(searchParams.get("min_enrollment")),
+      maxYearLevel: searchParams.get("max_year_level") || "2",
+      includeSubjects: searchParams.get("include_subjects") || "",
+      excludeSubjects: searchParams.get("exclude_subjects") || "",
+      minHistoricalAvg: Number(searchParams.get("min_historical_avg")),
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/gpa-boosters?` +
+      `${API_URL}/api/v1/gpa-boosters?` +
         new URLSearchParams({
           limit: validatedParams.limit.toString(),
-          min_enrollment: validatedParams.min_enrollment.toString(),
-          max_year_level: validatedParams.max_year_level.toString(),
-          include_subjects: validatedParams.include_subjects || "",
-          exclude_subjects: validatedParams.exclude_subjects || "",
-          min_historical_avg:
-            validatedParams.min_historical_avg?.toString() || "80",
+          min_enrollment: validatedParams.minEnrollment.toString(),
+          max_year_level: validatedParams.maxYearLevel.toString(),
+          include_subjects: validatedParams.includeSubjects || "",
+          exclude_subjects: validatedParams.excludeSubjects || "",
+          min_historical_avg: validatedParams.minHistoricalAvg?.toString(),
         }).toString(),
       {
         method: "GET",

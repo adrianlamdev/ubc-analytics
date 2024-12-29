@@ -72,6 +72,7 @@ import useSWR from "swr";
 import { z } from "zod";
 import { Course, Subject } from "@/types";
 import { Banner, BannerDescription, BannerTitle } from "@/components/banner";
+import { PredictionRequestSchema } from "@/lib/schema";
 
 // TODO: Move these to a separate file
 const PREDICTION_RANGE = {
@@ -153,7 +154,7 @@ export default function GradePredictor() {
   );
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(PredictionRequestSchema),
     defaultValues: {
       subject: "",
       course: "",

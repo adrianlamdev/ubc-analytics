@@ -1,13 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import logger from "@/utils/logger";
-
-// TODO: move to shared schema.ts file
-const PredictionRequestSchema = z.object({
-  subject: z.string().min(1, "Subject is required"),
-  course: z.string().min(1, "Course is required"),
-  year: z.string().min(1, "Year is required"),
-});
+import { PredictionRequestSchema } from "@/lib/schema";
 
 export async function POST(req: NextRequest) {
   try {

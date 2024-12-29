@@ -44,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { GpaBoostersQuerySchema } from "@/lib/schema";
 import { Course } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -74,23 +75,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-// TODO: Move this to a shared file, change defaults later
-const formSchema = z.object({
-  minEnrollment: z.number().default(50),
-  // minEnrollment: z.string().transform((val) => Number.parseInt(val, 10)),
-  maxYearLevel: z.string(),
-  limit: z.string(),
-  includeSubjects: z.string().optional(),
-  excludeSubjects: z.string().optional(),
-  minHistoricalAvg: z.number().default(80),
-  // minHistoricalAvg: z
-  //   .string()
-  //   .transform((val) => Number.parseFloat(val))
-  //   .refine((val) => val <= 100, {
-  //     message: "Minimum Historical Average cannot exceed 100%",
-  //   }),
-});
-
 // TODO: Move this to a shared file
 interface CourseResponse {
   courses: Course[];
@@ -107,17 +91,8 @@ export default function GpaBoosters() {
   const [error, setError] = useState("");
   const [courses, setCourses] = useState<CourseResponse | null>(null);
 
-  type FormValues = {
-    minEnrollment: number;
-    maxYearLevel: string;
-    limit: string;
-    includeSubjects?: string;
-    excludeSubjects?: string;
-    minHistoricalAvg: number;
-  };
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof GpaBoostersQuerySchema>>({
+    resolver: zodResolver(GpaBoostersQuerySchema),
     defaultValues: {
       minEnrollment: 50,
       maxYearLevel: "2",
@@ -127,6 +102,8 @@ export default function GpaBoosters() {
       minHistoricalAvg: 80,
     },
   });
+
+  type FormValues = z.infer<typeof GpaBoostersQuerySchema>;
 
   const handleCourseClick = (course: Course) => {
     // TODO: more functionality , for example, open a modal with more details or navigate to a course page
@@ -158,6 +135,14 @@ export default function GpaBoosters() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleNumberFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: any,
+  ) => {
+    const value = e.target.value === "" ? "" : Number(e.target.value);
+    field.onChange(value);
   };
 
   return (
@@ -281,7 +266,7 @@ export default function GpaBoosters() {
                                         formField.onChange(value);
                                       }
                                     }}
-                                    value={formField.value.toString()}
+                                    value={formField.value?.toString() ?? ""}
                                   >
                                     <SelectTrigger className="bg-background/50 backdrop-blur-sm">
                                       <SelectValue
@@ -367,9 +352,10 @@ export default function GpaBoosters() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <Alert variant="destructive" className="mt-4">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <Banner variant="error">
+                  <BannerTitle>Failed to fetch</BannerTitle>
+                  <BannerDescription>{error}</BannerDescription>
+                </Banner>
               </motion.div>
             )}
 
@@ -378,7 +364,7 @@ export default function GpaBoosters() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4"
               >
                 {[...Array(Number.parseInt(form.watch("limit")))].map(
                   (_, i) => (
