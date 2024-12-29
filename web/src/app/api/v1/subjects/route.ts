@@ -13,7 +13,9 @@ const sql = neon(DATABASE_URL);
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const query = Object.fromEntries(searchParams.entries());
+    const query = {
+      subject: searchParams.get("subject"),
+    };
     const validationResult = SubjectsQuerySchema.safeParse(query);
 
     if (!validationResult.success) {

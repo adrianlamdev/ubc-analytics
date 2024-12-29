@@ -22,8 +22,13 @@ export const GpaBoostersQuerySchema = z.object({
     .max(100, "Maximum average cannot exceed 100"),
 });
 
+export const CoursesQuerySchema = z.object({
+  subject: z.string().min(1, "Subject parameter is required"),
+});
+
 export default {
   SubjectsQuerySchema,
   PredictionRequestSchema,
   GpaBoostersQuerySchema,
+  CoursesQuerySchema,
 };
